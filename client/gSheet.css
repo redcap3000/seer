@@ -1,0 +1,30 @@
+body{
+	background-color:black;
+}
+
+.c3-xgrid-line.lPos line {
+    stroke: green;
+}
+
+.c3-xgrid-line.lNeg line{
+    stroke : red;
+}
+
+.c3-xgrid-line.lPos text{
+    stroke:green;
+}
+.c3-xgrid-line.lNeg text{
+    stroke:red;
+}
+.c3-axis-y2-label text{
+    stroke:purple;
+}
+
+.c3-region {
+	background-color: red;
+	color:red;
+}
+
+path.domain { stroke: white; }
+.tick text { stroke: grey; }
+.c3-legend-item text { stroke: grey; }
