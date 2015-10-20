@@ -32,7 +32,7 @@ Meteor.startup(function(){
 		if(ltcPrice && ltcPastPrice !== ltcPrice){
 			var ltcDiff = ltcPrice - ltcPastPrice;
 			// double check if returned quote is string/number for rounding ... maybe use string pos; for reducing data sizes
-			Bitfinex.set('lu_' + time,parseFloat(ltcPrice).toFixed(3));
+			Bitfinex.set('lu_' + time,parseFloat(ltcPrice).toFixed(2));
 			ltcPastPrice = ltcPrice;
 			// only console log if the diff is .. hmm ?
 			//if(Math.abs(ltcPastDiff) != Math.abs(ltcDiff) && ltcDiff > .0001){
