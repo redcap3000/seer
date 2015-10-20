@@ -1,5 +1,5 @@
 body{
-	background-color:black;
+	background-color:lightgray;
 }
 
 .c3-xgrid-line.lPos line {
@@ -16,15 +16,38 @@ body{
 .c3-xgrid-line.lNeg text{
     stroke:red;
 }
+
+
+.c3-ygrid-line.btcLow line{
+	stroke : red;
+}
+
+.c3-ygrid-line.btcLow text{
+	stroke : red;
+}
+
+.c3-ygrid-line.btcHigh line{
+	stroke : blue;
+}
+
+.c3-ygrid-line.btcHigh text{
+	stroke : blue;
+}
+
 .c3-axis-y2-label text{
     stroke:purple;
+}
+
+.c3-xgrid-line text {
+    fill: black;
 }
 
 .c3-region {
 	background-color: red;
 	color:red;
 }
-
+/*
 path.domain { stroke: white; }
 .tick text { stroke: grey; }
 .c3-legend-item text { stroke: grey; }
+*/
