@@ -1,5 +1,5 @@
 body{
-	background-color:lightgray;
+	background-color:black;
 }
 
 .c3-xgrid-line.lPos line {
@@ -27,11 +27,11 @@ body{
 }
 
 .c3-ygrid-line.btcHigh line{
-	stroke : blue;
+	stroke : white;
 }
 
 .c3-ygrid-line.btcHigh text{
-	stroke : blue;
+	stroke : white;
 }
 
 .c3-axis-y2-label text{
@@ -46,8 +46,19 @@ body{
 	background-color: red;
 	color:red;
 }
-/*
+
 path.domain { stroke: white; }
 .tick text { stroke: grey; }
 .c3-legend-item text { stroke: grey; }
-*/
+
+
+.c3-region.sell {
+	fill: red;
+}
+.c3-region.buy {
+	fill: green;
+}
+
+.c3-axis-y2-label{
+	fill:white;
+}

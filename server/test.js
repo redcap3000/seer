@@ -18,7 +18,7 @@ Meteor.startup(function(){
 			var btcDiff = btcPrice - btcPastPrice;
 			Bitfinex.set('bb_'+time,parseFloat(btcPrice).toFixed(2));
 			btcPastPrice = btcPrice;
-			if(btcPastDiff != btcDiff && Math.abs(btcDiff) > .07){
+			if(btcPastDiff != btcDiff && Math.abs(btcDiff) > .1){
 				console.log('BTC\t: ' + 
 							btcDiff.toFixed(2) + 
 							'\t\t\t: ' + 

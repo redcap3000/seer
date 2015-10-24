@@ -6,6 +6,25 @@ bfBtcAxis = ['bfbtc'], ltAxis = ['ltc'], btcDiffAxis = ['btcDiff'];
 
 document.write('<div class="chart2"></div><br/><button onclick="chart2.transform(\'step\')">Step</button><button onclick="chart2.transform(\'line\')">Line</button>');
 
+// maybe take an object
+// column equals 
+flowChart = function(columnX,columnY){
+  if(typeof chart2 != "undefined"){
+    chart2.flow({
+
+      columns : [
+        columnX,
+        columnY
+
+      ],
+      length : 0
+
+    });
+    return true;
+  }
+  return false;
+};
+
 loadChart = function(){
   if(typeof chart2 != "undefined" && chart2 && chart2 != null){
     return chart2.load({columns : [ x,ltcX,bfBtcAxis,ltAxis] });
@@ -17,42 +36,44 @@ loadChart = function(){
 
 
 // build chart; charts two x axes as a timeseries
-chart2 = c3.generate({
-    bindto:'.chart2',
-    size: { height: 400 , width: 1260 },
-    data: {
-          type:  'step',
-          xs :{
-            'bfbtc' : 'x',
-            'ltc' : 'x1'
-          },
-          columns: [ x, ltcX, bfBtcAxis, ltAxis ],
-          axes : {
-            'bfbtc' : 'y2',
-            'ltc' : 'y'
-           },
-          axis : {
-            x : {
-              label : { position: 'inner-center' }
+if(typeof chart2 == "undefined"){
+  console.log('Init C3 Chart');
+  chart2 = c3.generate({
+      bindto:'.chart2',
+      size: { height: 300 , width: 1260 },
+      data: {
+            type:  'step',
+            xs :{
+              'bfbtc' : 'x',
+              'ltc' : 'x1'
+            },
+            columns: [ x, ltcX, bfBtcAxis, ltAxis ],
+            axes : {
+              'bfbtc' : 'y2',
+              'ltc' : 'y'
+             },
+            axis : {
+              x : {
+                label : { position: 'inner-center' }
+              }
+            },
+            xFormat : '%I:%M:%S',
             }
+
+            ,
+      color: {
+            pattern: ['white', 'yellow', 'orange']
           },
-          xFormat : '%I:%M:%S',
-          }
-
-          ,
-    color: {
-          pattern: ['green', 'purple', 'red']
+      axis: {
+          x: {
+            type: 'timeseries',
+            tick: { format: '%I:%M:%S' }
+          },
+          y: {
+            tick : { format: d3.format("$,") }
+          },
+          y2: { show:true }
         },
-    axis: {
-        x: {
-          type: 'timeseries',
-          tick: { format: '%I:%M:%S' }
-        },
-        y: {
-          tick : { format: d3.format("$,") }
-        },
-        y2: { show:true }
-      },
-    legend: { show: true }
-});
-
+      legend: { show: true }
+  });
+}
