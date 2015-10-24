@@ -1,7 +1,9 @@
 btcPastPrice = 0;
-ltcPastPrice = 0;
-ltcDiff = 0, btcDiff = 0;
-ltcPastDiff = 0, btcPastDiff = 0;
+//ltcPastPrice = 0;
+//ltcDiff = 0, 
+btcDiff = 0;
+//ltcPastDiff = 0, 
+btcPastDiff = 0;
 
 Meteor.startup(function(){
 	Meteor.setInterval(
@@ -29,17 +31,18 @@ Meteor.startup(function(){
 			}
 			btcPastDiff = btcDiff;
 		}
-		if(ltcPrice && ltcPastPrice !== ltcPrice){
-			var ltcDiff = ltcPrice - ltcPastPrice;
+
+		//if(ltcPrice && ltcPastPrice !== ltcPrice){
+			//var ltcDiff = ltcPrice - ltcPastPrice;
 			// double check if returned quote is string/number for rounding ... maybe use string pos; for reducing data sizes
-			Bitfinex.set('lu_' + time,parseFloat(ltcPrice).toFixed(2));
-			ltcPastPrice = ltcPrice;
+			//Bitfinex.set('lu_' + time,parseFloat(ltcPrice).toFixed(2));
+			//ltcPastPrice = ltcPrice;
 			// only console log if the diff is .. hmm ?
 			//if(Math.abs(ltcPastDiff) != Math.abs(ltcDiff) && ltcDiff > .0001){
 				//console.log('LTC\t: '+ ltcDiff.toFixed(4) + '\t\t: ' + ltcPastPrice + '\t* ' + ltcPastDiff.toFixed(4));
 			//	ltcPastDiff = ltcDiff;	
 			//}
-		}	
+		//}	
 	},
 	1000);
 });
