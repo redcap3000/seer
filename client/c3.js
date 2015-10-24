@@ -1,6 +1,6 @@
 // Variables for x, axis; javascript date objects
 // btcDiffX relates to x axis labels indexed by date
-x = ['x'], ltcX = ['x1'] , btcDiffX = ['x']; 
+//x = ['x'], ltcX = ['x1'] , btcDiffX = ['x']; 
 // Variables for y axis; numbers/floats
 bfBtcAxis = ['bfbtc'], ltAxis = ['ltc'], btcDiffAxis = ['btcDiff'];
 
@@ -11,11 +11,9 @@ document.write('<div class="chart2"></div><br/><button onclick="chart2.transform
 flowChart = function(columnX,columnY){
   if(typeof chart2 != "undefined"){
     chart2.flow({
-
       columns : [
         columnX,
         columnY
-
       ],
       length : 0
 
@@ -25,7 +23,8 @@ flowChart = function(columnX,columnY){
   return false;
 };
 
-loadChart = function(){
+// probably depreciate... or modify
+loadChart = function(x,ltcX,bfBtcAxis,ltAxis){
   if(typeof chart2 != "undefined" && chart2 && chart2 != null){
     return chart2.load({columns : [ x,ltcX,bfBtcAxis,ltAxis] });
   }else{
@@ -45,12 +44,17 @@ if(typeof chart2 == "undefined"){
             type:  'step',
             xs :{
               'bfbtc' : 'x',
-              'ltc' : 'x1'
+              //'ltc' : 'x1'
             },
-            columns: [ x, ltcX, bfBtcAxis, ltAxis ],
+            columns: [ 
+              ['x'], 
+              //['x1'], 
+              ['bfbtc'], 
+              //['ltc'] 
+            ],
             axes : {
               'bfbtc' : 'y2',
-              'ltc' : 'y'
+              //'ltc' : 'y'
              },
             axis : {
               x : {
@@ -74,6 +78,9 @@ if(typeof chart2 == "undefined"){
           },
           y2: { show:true }
         },
-      legend: { show: true }
+      legend: { show: true },
+      interaction: {
+        enabled: false
+      }
   });
 }

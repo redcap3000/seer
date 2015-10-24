@@ -10,13 +10,6 @@ body{
     stroke : red;
 }
 
-.c3-xgrid-line.lPos text{
-    stroke:green;
-}
-.c3-xgrid-line.lNeg text{
-    stroke:red;
-}
-
 
 .c3-ygrid-line.btcLow line{
 	stroke : red;
@@ -39,7 +32,7 @@ body{
 }
 
 .c3-xgrid-line text {
-    fill: black;
+    fill: white;
 }
 
 .c3-region {
