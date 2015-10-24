@@ -1,20 +1,24 @@
 btcHigh = function(){
   var comp;
-  bfBtcAxis.filter(function(a,i){
-    if(i == 1){
-      comp = a;
-    }else if(i != 0){
-      if(a > comp){
+  if(typeof chart2 != "undefined"){
+    chart2.data()[0].values.filter(function(a,i){
+      a = a.value;
+      if(i == 1){
         comp = a;
+      }else if(i != 0){
+        if(a > comp){
+          comp = a;
+        }
       }
-    }
-  });
-  return comp;
+    });
+    return comp;
+  }
+  return false;
 };
 
 btcLow = function(){
   var comp;
-  bfBtcAxis.filter(function(a,i){
+  chart2.data()[0].values.filter(function(a,i){
     if(i == 1){
       comp = a;
     }else if(i != 0){
@@ -29,14 +33,15 @@ btcLow = function(){
 getBtcPrice = function(time){
   // link the x axis to the bfBtcAxis ; find the time ; use index
   // to reference
-  var index = x.indexOf(time);
+  var index = chart2.xs().bfbtc.indexOf(time);
   if(index != -1){
-    return bfBtcAxis[index];
+    return chart2.data()[0].values[index];
   }
   return false;
 };
 
 btcTimeDiff = function(time,pastTime){
-  // returns seconds
-  return moment(time).diff(moment(pastTime)) / 1000;
+  // returns seconds maybe rewrite this to just do subtraction on 
+  // unix timestamp ?
+  return ((time.getTime() / 1000) - (pastTime.getTime() / 1000));
 }
