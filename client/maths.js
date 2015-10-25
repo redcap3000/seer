@@ -20,6 +20,7 @@ btcLow = function(){
   var comp;
   if(typeof chart2.data()[0] != "undefined"){
     chart2.data()[0].values.filter(function(a,i){
+      a = a.value;
       if(i == 1){
         comp = a;
       }else if(i != 0){
@@ -37,7 +38,7 @@ getBtcPrice = function(time){
   // to reference
   var index = chart2.xs().bfbtc.indexOf(time);
   if(index != -1 && typeof chart2.data()[0] != "undefined"){
-    return chart2.data()[0].values[index];
+    return chart2.data()[0].values[index].value;
   }
   return false;
 };
