@@ -39,7 +39,7 @@ if(typeof chart2 == "undefined"){
   console.log('Init C3 Chart');
   chart2 = c3.generate({
       bindto:'.chart2',
-      size: { height: 300 , width: 1260 },
+      size: { height: 730 , width: 1024 },
       data: {
             type:  'step',
             xs :{
