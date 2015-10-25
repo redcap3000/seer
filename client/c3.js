@@ -11,13 +11,13 @@ document.write('<div class="chart2"></div><br/><button onclick="chart2.transform
 
 
 flushAll = function(){
-  chart2.ygrids.remove({classes :["btcLow","btcHigh"]});
+  chart2.ygrids.remove();
                 //chart2.ygrids.remove({class :"btcHigh"});
   chart2.unload({
   ids: ['x', 'bfbtc']
   });
-  chart2.regions.remove({classes: ['buy', 'sell',"lplus",'lNeg']});
-
+  chart2.regions.remove();
+  chart2.xgrids.remove()
 };
 
 flowChart = function(columnX,columnY){
@@ -43,7 +43,7 @@ if(typeof chart2 == "undefined"){
   console.log('Init C3 Chart');
   chart2 = c3.generate({
       bindto:'.chart2',
-      size: { height: 730 , width: 1024 },
+      size: { height: 700 , width: 1024 },
       data: {
             type:  'step',
             xs :{
