@@ -78,6 +78,7 @@ Meteor.startup(function () {
   Meteor.subscribe("ticker_bitcoin",
     function(){
       // begin
+
       Bitfinex.matching("bb_*").
       observeChanges({
         added : function(id,doc){
@@ -123,8 +124,9 @@ Meteor.startup(function () {
           flowChart(['x',time],['bfbtc',value]);
         }
       });
+      diffData();
+      // maybe remove this to window on changed event c3...
+      chart2.resize();
     }
   );
-chart2.resize();
-diffData();
 });
