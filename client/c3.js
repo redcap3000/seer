@@ -2,12 +2,24 @@
 // btcDiffX relates to x axis labels indexed by date
 //x = ['x'], ltcX = ['x1'] , btcDiffX = ['x']; 
 // Variables for y axis; numbers/floats
-bfBtcAxis = ['bfbtc'], ltAxis = ['ltc'], btcDiffAxis = ['btcDiff'];
 
-document.write('<div class="chart2"></div><br/><button onclick="chart2.transform(\'step\')">Step</button><button onclick="chart2.transform(\'line\')">Line</button>');
+document.write('<div class="chart2"></div><br/><button onclick="chart2.transform(\'step\')">Step</button><button onclick="chart2.transform(\'line\')">Line</button><button onclick="flushAll()">Flush</button><button onclick="flushAll(60 * 30)">AutoFlush</button>');
 
 // maybe take an object
 // column equals 
+
+
+
+flushAll = function(){
+  chart2.ygrids.remove({classes :["btcLow","btcHigh"]});
+                //chart2.ygrids.remove({class :"btcHigh"});
+  chart2.unload({
+  ids: ['x', 'bfbtc']
+  });
+  chart2.regions.remove({classes: ['buy', 'sell',"lplus",'lNeg']});
+
+};
+
 flowChart = function(columnX,columnY){
   if(typeof chart2 != "undefined"){
     chart2.flow({
@@ -24,14 +36,6 @@ flowChart = function(columnX,columnY){
 };
 
 // probably depreciate... or modify
-loadChart = function(x,ltcX,bfBtcAxis,ltAxis){
-  if(typeof chart2 != "undefined" && chart2 && chart2 != null){
-    return chart2.load({columns : [ x,ltcX,bfBtcAxis,ltAxis] });
-  }else{
-    console.log("missing this chart");
-    return false;
-  }
-};
 
 
 // build chart; charts two x axes as a timeseries
@@ -52,10 +56,7 @@ if(typeof chart2 == "undefined"){
               ['bfbtc'], 
               //['ltc'] 
             ],
-            axes : {
-              'bfbtc' : 'y2',
-              //'ltc' : 'y'
-             },
+           
             axis : {
               x : {
                 label : { position: 'inner-center' }
@@ -75,10 +76,9 @@ if(typeof chart2 == "undefined"){
           },
           y: {
             tick : { format: d3.format("$,") }
-          },
-          y2: { show:true }
+          }
         },
-      legend: { show: true },
+      legend: { show: false },
       interaction: {
         enabled: false
       }
