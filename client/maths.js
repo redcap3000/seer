@@ -18,7 +18,7 @@ btcHigh = function(){
 
 btcLow = function(){
   var comp;
-  if(typeof chart2.data()[0] != "undefined"  && typeof chart2.data()[0].values != "undefined" && chart2.data()[0].values.length > 1){){
+  if(typeof chart2.data()[0] != "undefined"  && typeof chart2.data()[0].values != "undefined" && chart2.data()[0].values.length > 1){
     chart2.data()[0].values.filter(function(a,i){
       a = a.value;
       if(i == 1){

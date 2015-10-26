@@ -1,17 +1,7 @@
 Meteor.startup(function () {
   initTime = new Date();
   
-  autoFlush = function(duration){
-    // accept duration in seconds
-    if(typeof flushInterval != "undefined"){
-      Meteor.clearInterval(flushInterval);
-      }
-    if(typeof duration == "number"){
-        // set interval
-      flushInterval = Meteor.setInterval(function(){flushAll()},duration * 1000);
-    }
-    return flushInterval;
-  };
+
 
   
 
