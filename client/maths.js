@@ -1,6 +1,6 @@
 btcHigh = function(){
   var comp;
-  if(typeof chart2 != "undefined" && chart2.data()[0] != "undefined"){
+  if(typeof chart2 != "undefined" chart2.data()[0] != "undefined" && typeof chart2.data()[0].values != "undefined" && chart2.data()[0].values.length > 1){
     chart2.data()[0].values.filter(function(a,i){
       a = a.value;
       if(i == 1){
@@ -18,7 +18,7 @@ btcHigh = function(){
 
 btcLow = function(){
   var comp;
-  if(typeof chart2.data()[0] != "undefined"){
+  if(typeof chart2.data()[0] != "undefined"  && typeof chart2.data()[0].values != "undefined" && chart2.data()[0].values.length > 1){){
     chart2.data()[0].values.filter(function(a,i){
       a = a.value;
       if(i == 1){
@@ -36,9 +36,11 @@ btcLow = function(){
 getBtcPrice = function(time){
   // link the x axis to the bfBtcAxis ; find the time ; use index
   // to reference
-  var index = chart2.xs().bfbtc.indexOf(time);
-  if(index != -1 && typeof chart2.data()[0] != "undefined"){
-    return chart2.data()[0].values[index].value;
+  if(typeof chart2.data()[0] != "undefined" && typeof chart2.data()[0].values != "undefined" && chart2.data()[0].values.length > 1){){
+    var index = chart2.xs().bfbtc.indexOf(time);
+    if(index != -1){
+      return chart2.data()[0].values[index].value;
+    }
   }
   return false;
 };
