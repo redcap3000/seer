@@ -11,7 +11,7 @@ Meteor.startup(function(){
 			console.log(new Date());
 			RunCli.run("redis-cli flushall");
 		},
-	1000*60*5);
+	1000*60*2);
 	Meteor.setInterval(function(){
 		var time =  Math.round(new Date() / 1000,2);
 		var ltcPrice = bitfinex_ticker('ltcusd','last_price');
