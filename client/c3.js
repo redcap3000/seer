@@ -38,8 +38,16 @@ flowChart = function(columnX,columnY){
 // build chart; charts two x axes as a timeseries
 if(typeof chart2 == "undefined"){
   console.log('Init C3 Chart');
+  var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 1000) - 40;
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 740) - 80;
   chart2 = c3.generate({
       transition : { duration : 0 },
+      padding : {
+        top : 10,
+      },
+      onresized : function(){
+        chart2.resize();
+      },
       oninit : function(){
         console.log('chart generation init');
 
@@ -153,13 +161,13 @@ if(typeof chart2 == "undefined"){
             // chained sub
             
             // maybe remove this to window on changed event c3...
-            chart2.resize();
+            
           }
         );
 
       },
       bindto:'.chart2',
-      size: { height: 700 , width: 1024 },
+      size: { height: h , width: w },
       data: {
             type:  'step',
             xs :{
@@ -188,7 +196,7 @@ if(typeof chart2 == "undefined"){
       axis: {
           x: {
             type: 'timeseries',
-            tick: { format: '%I:%M:%S' }
+            tick: { format: '%I:%M' }
           },
           y: {
             tick : { format: d3.format("$,") }

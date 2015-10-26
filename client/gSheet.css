@@ -42,8 +42,8 @@ body{
 }
 
 path.domain { stroke: white; }
-.tick text { stroke: grey; }
-.c3-legend-item text { stroke: grey; }
+.tick text { stroke: white; font-size:24px;}
+.c3-legend-item text { stroke: white; }
 
 
 .c3-region.sell {
