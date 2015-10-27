@@ -5,7 +5,7 @@ btcDiff = 0;
 //ltcPastDiff = 0, 
 btcPastDiff = 0;
 
-bsbtcPastPrice = 0;
+BitstampPastPrice = 0;
 
 
 var setRedis = function(key,time,value){
@@ -61,11 +61,11 @@ Meteor.startup(function(){
 	trades_channel.bind('trade', Meteor.bindEnvironment(function(data) {
 		var price = parseFloat(data['price']);
 
-		if(price && price != bsbtcPastPrice){
+		if(price && price != BitstampPastPrice){
 		    var time =  Math.round(new Date() / 1000,2);
 		    setRedis('bs' , time, data['price']);
 	    	//console.log( ' bitstamp : ' + data['amount'] + ' BTC @ ' + data['price'] + ' USD');
-	    	bsbtcPastPrice = price;
+	    	BitstampPastPrice = price;
 		}
 	}));
 

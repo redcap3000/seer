@@ -53,14 +53,28 @@ if(typeof chart2 == "undefined"){
   var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 1000) - 40;
   var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 740) - 100;
   // to do...
-  //generateColumns = function(keyObj){
+  generateColumns = function(keyObj){
+      if(typeof keyObj == "undefined"){
+        return false;
+      }
+     var xs = _.reduce(keyObj, 
+      function(memo, value, key) {
+        memo[key] = 'x';
+        return memo;
+       }
+       , {});
 
-  //  console.log( _.reduce(keyObj, function(memo, value, key) {
-  //    memo[key] = 'x';
-  //      return memo;
-  //    }, {}));
+     var  columns = [];
+     _.reduce(keyObj,
+        function(memo,value,key){
+          columns.push[key];
+        });
+      console.log(xs);
+      console.log(columns);
 
-  //}
+    console.log(columns);
+    console.log(xs);
+  };
 
   chart2 = c3.generate({
       transition : { duration : 0 },
@@ -84,7 +98,7 @@ if(typeof chart2 == "undefined"){
                       // ...
                       var time = new Date(redisKeyToTime(id) * 1000);
                       var value = parseFloat(doc.value);
-                      flowChart(['x',time],['bsbtc',value]);
+                      flowChart(['x',time],['Bitstamp',value]);
                     }
                   });
               });
@@ -213,7 +227,7 @@ if(typeof chart2 == "undefined"){
                   }
                 }
                 //bfBtcAxis.push(value);
-                flowChart(['x',time],['bfbtc',value]);
+                flowChart(['x',time],['Bitfinex',value]);
               }
             });
             // chained sub
@@ -229,30 +243,24 @@ if(typeof chart2 == "undefined"){
       data: {
             type:  'scatter',
             xs :{
-              'bfbtc' : 'x',
-              'bsbtc' : 'x',
+              'Bitfinex' : 'x',
+              'Bitstamp' : 'x',
               'OKCoin' : 'x',
               'Btc-e' : 'x'
             },
-            types : {
-              'bfbtc' : 'scatter',
-              'bsbtc' : 'scatter',
-              'OKCoin' : 'scatter',
-              'Btc-e' : 'scatter'
-            },
             columns: [ 
               ['x'], 
-              ['bfbtc'], 
-              ['bsbtc'],
+              ['Bitfinex'], 
+              ['Bitstamp'],
               ['OKCoin'],
               ['Btc-e']
             ],
             //groups : [
-            //  ['bfbtc','bsbtc']
+            //  ['bfbtc','Bitstamp']
             //],
            //axes :{
            //   'bfbtc' : 'y',
-           //   'bsbtc' : 'y2'
+           //   'Bitstamp' : 'y2'
            //},
             axis : {
               x : {

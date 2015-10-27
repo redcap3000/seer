@@ -1,3 +1,4 @@
 {
-  "pusher-client": "0.2.3"
+  "pusher-client": "0.2.3",
+  "btcaverage" : "0.0.8"
 }
