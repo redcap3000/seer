@@ -264,7 +264,7 @@ if(typeof chart2 == "undefined"){
 
             ,
       color: {
-            pattern: ['FFFF33', 'FF33FF', '99CCFF',"orange"]
+            pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange"]
           },
       axis: {
           x: {
