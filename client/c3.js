@@ -54,7 +54,18 @@ if(typeof chart2 == "undefined"){
         bitcoinSub = Meteor.subscribe("ticker_bitcoin",
           function(){
             // begin
-
+            bitstampSub = Meteor.subscribe("ticker_bitstamp",
+              function(id,doc){
+                Bitfinex.matching("bs_*").
+                  observeChanges({
+                    added: function (id, doc) {
+                      // ...
+                      var time = new Date(redisKeyToTime(id) * 1000);
+                      var value = parseFloat(doc.value);
+                      flowChart(['x2',time],['bsbtc',value]);
+                    }
+                  });
+              });
             Bitfinex.matching("bb_*").
             observeChanges({
               added : function(id,doc){
@@ -124,18 +135,7 @@ if(typeof chart2 == "undefined"){
                           }
                         );
                         // bitstamp data.... sub to it.. 
-                        bitstampSub = Meteor.subscribe("ticker_bitstamp",function(id,doc){
-                          Bitfinex.matching("bs_*").
-                            observeChanges({
-                              added: function (id, doc) {
-                                // ...
-                                var time = new Date(redisKeyToTime(id) * 1000);
-                                var value = parseFloat(doc.value);
-                                flowChart(['x2',time],['bsbtc',value]);
-                              }
-                            });
-
-                        });
+                       
                     });
                   }
                   if(value > btcHigh()){
