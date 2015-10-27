@@ -123,6 +123,19 @@ if(typeof chart2 == "undefined"){
                             }
                           }
                         );
+                        // bitstamp data.... sub to it.. 
+                        bitstampSub = Meteor.subscribe("ticker_bitstamp",function(id,doc){
+                          Bitfinex.matching("bs_*").
+                            observeChanges({
+                              added: function (id, doc) {
+                                // ...
+                                var time = new Date(redisKeyToTime(id) * 1000);
+                                var value = parseFloat(doc.value);
+                                flowChart(['x2',time],['bsbtc',value]);
+                              }
+                            });
+
+                        });
                     });
                   }
                   if(value > btcHigh()){
@@ -172,21 +185,24 @@ if(typeof chart2 == "undefined"){
             type:  'step',
             xs :{
               'bfbtc' : 'x',
-              //'ltc' : 'x1'
+              'bsbtc' : 'x2'
             },
             columns: [ 
               ['x'], 
-              //['x1'], 
+              ['x2'], 
               ['bfbtc'], 
-              //['ltc'] 
+              ['bsbtc'] 
             ],
-           
+           axes :{
+              'bfbtc' : 'y',
+              'bsbtc' : 'y2'
+           },
             axis : {
               x : {
                 label : { position: 'inner-center' }
               }
             },
-            xFormat : '%I:%M:%S',
+            xFormat : '%I:%M',
             }
 
             ,
@@ -199,10 +215,14 @@ if(typeof chart2 == "undefined"){
             tick: { format: '%I:%M' }
           },
           y: {
-            tick : { format: d3.format("$,") }
+            tick : { format: d3.format('$,.2f') }
+          },
+          y2 : {
+            show : true,
+            tick : { format: d3.format('$,.2f') }
           }
         },
-      legend: { show: false },
+      legend: { show: true },
       interaction: {
         enabled: false
       }

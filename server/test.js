@@ -5,7 +5,22 @@ btcDiff = 0;
 //ltcPastDiff = 0, 
 btcPastDiff = 0;
 
+bsbtcPastPrice = 0;
+
 Meteor.startup(function(){
+	Pusher = Meteor.npmRequire('pusher-client');
+	var pusher = new Pusher('de504dc5763aeef9ff52');
+	var trades_channel = pusher.subscribe('live_trades');
+	var i = 0;
+	trades_channel.bind('trade', Meteor.bindEnvironment(function(data) {
+		if(data['price'] != bsbtcPastPrice){
+		    var time =  Math.round(new Date() / 1000,2);
+		    Bitfinex.set('bs_' + time, parseFloat(data['price']));
+	    	console.log( ' bitstamp : ' + data['amount'] + ' BTC @ ' + data['price'] + ' USD');
+	    	bsbtcPastPrice = data['price'];
+		}
+	}));
+
 	Meteor.setInterval(
 		function(){
 			console.log(new Date());
