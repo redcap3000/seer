@@ -1,35 +1,57 @@
-getResponseData = function(url,field){
-  var response = HTTP.get(url);
-  if(response && typeof response.data != "undefined" && response.data && response.data != null){
-    if(typeof field != "undefined" && field && field != null){
-      if(typeof response.data[field] != "undefined"){
-        return response.data[field];
-      }else{
-        return false;
-      }
-    }
-    return response.data;
-  }
-  return false;
+
+setRedis = function(key,time,value){
+  Bitfinex.set(key + '_'+ time,parseFloat(value).toFixed(2));
 };
 
-
-
-bitfinex_symbols = function(){
-  return getResponseData("https://api.bitfinex.com/v1/symbols");
-};
-
-bitfinex_ticker = function(symbol,field,asFloat){
-  symbol = (typeof symbol == "undefined" || !symbol || symbol == null ? 'btcusd' : symbol);
-  if(typeof field == "string" && asFloat == true){
-    var response = getResponseData("https://api.bitfinex.com/v1/pubticker/" + symbol,field);
-    return (response ? parseFloat(response) : false);
-  }
-  return getResponseData("https://api.bitfinex.com/v1/pubticker/" + symbol,field);
-}
-
+/* 
+  Using kinda cool btc average plugin
+*/
 btcAverage = function(callback){
 var btcaverage = Meteor.npmRequire('btcaverage');
       btcaverage()
           .then(Meteor.bindEnvironment(callback));
 };
+
+
+/*
+  Default flow for what to do with the average data (store to redis)
+  btcAverage(btcAverageCallback);
+*/
+
+btcAverageCallback = function(priceDetails){
+  if(typeof valArray == "undefined"){
+    valArray = [];
+  }
+  var time =  Math.round(new Date() / 1000,2);
+  Object.keys(priceDetails.prices).map(function(providerName){
+    var value = parseFloat(priceDetails.prices[providerName]).toFixed(2);
+    //console.log(providerName + ':\t$\t' + priceDetails.prices[providerName]);
+    if(typeof keyMapping[providerName] != "undefined" && value != 0.00){
+      //console.log(providerName + ':\t$\t' + priceDetails.prices[providerName]);
+
+      if(typeof valArray[providerName] == "undefined"){
+          valArray[providerName] = value;
+        setRedis(keyMapping[providerName],time,value);
+        }else if(valArray[providerName] !== value ){
+          setRedis(keyMapping[providerName],time,value);
+          var btcDiff = value - valArray[providerName];
+          // store difference data for bitfinex ...
+      if(typeof btcPastDiff != "undefined" && btcPastDiff != btcDiff && Math.abs(btcDiff) > .5){
+        console.log('BTC\t: ' + 
+              btcDiff.toFixed(2) + 
+              '\t\t\t: ' + 
+              btcPastPrice + 
+              '\t* '+
+              btcPastDiff.toFixed(2));
+        setRedis('bdd',time,btcPastDiff - btcDiff);
+      }else if(btcPastDiff == "undefined"){
+        var btcPastDiff = btcDiff;
+      }
+      btcPastDiff = btcDiff;
+
+        }
+        valArray[providerName] = value;
+    }
+   
+  });
+ };
