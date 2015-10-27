@@ -31,6 +31,6 @@ Meteor.startup(function(){
 		var time =  Math.round(new Date() / 1000,2);
 		btcAverage(btcAverageCallback);
 	},
-	1000*60*2);
+	1000*60);
 });
 

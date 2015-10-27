@@ -30,6 +30,7 @@ meteorhacks:async@1.0.0
 meteorhacks:npm@1.5.0
 minifiers@1.1.7
 minimongo@1.0.10
+mjr:blockchain-websockets@0.0.1
 mongo-id@1.0.1
 npm-container@1.2.0
 observe-sequence@1.0.7
