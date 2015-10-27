@@ -39,7 +39,7 @@ flowChart = function(columnX,columnY){
 if(typeof chart2 == "undefined"){
   console.log('Init C3 Chart');
   var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 1000) - 40;
-  var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 740) - 80;
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 740) - 100;
   chart2 = c3.generate({
       transition : { duration : 0 },
       padding : {
