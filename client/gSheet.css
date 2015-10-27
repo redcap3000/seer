@@ -1,5 +1,5 @@
 body{
-	background-color:black;
+	background-color:#080808;
 	font-size: 24px;
 }
 
@@ -42,7 +42,7 @@ body{
 }
 
 path.domain { stroke: white; }
-.tick text { stroke: white; font-size:24px;}
+.tick text { fill:white; stroke: white; font-size:24px;}
 .c3-legend-item text { stroke: white; }
 
 
@@ -55,4 +55,9 @@ path.domain { stroke: white; }
 
 .c3-axis-y2-label{
 	fill:white;
+	stroke:white;
 }
+
+.c3-circle {
+    stroke-width: 6px;
+   }

@@ -12,9 +12,21 @@ document.write('<div class="chart2"></div>');
 
 
 flushAll = function(){
-  chart2.ygrids.remove();
-  chart2.regions.remove();
-  chart2.xgrids.remove()
+  if(typeof chart2 != "undefined"){
+    chart2.ygrids.remove();
+    chart2.regions.remove();
+    chart2.xgrids.remove();
+    chart2.unload();
+  }
+  if(typeof bitcoinSub != "undefined"){
+    bitcoinSub.stop();
+  }
+  if(typeof bitstampSub != "undefined"){
+
+  }
+  if(typeof diffSub != "undefined"){
+
+  }
 };
 
 flowChart = function(columnX,columnY){
@@ -40,6 +52,16 @@ if(typeof chart2 == "undefined"){
   console.log('Init C3 Chart');
   var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 1000) - 40;
   var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 740) - 100;
+  // to do...
+  //generateColumns = function(keyObj){
+
+  //  console.log( _.reduce(keyObj, function(memo, value, key) {
+  //    memo[key] = 'x';
+  //      return memo;
+  //    }, {}));
+
+  //}
+
   chart2 = c3.generate({
       transition : { duration : 0 },
       padding : {
@@ -62,10 +84,31 @@ if(typeof chart2 == "undefined"){
                       // ...
                       var time = new Date(redisKeyToTime(id) * 1000);
                       var value = parseFloat(doc.value);
-                      flowChart(['x2',time],['bsbtc',value]);
+                      flowChart(['x',time],['bsbtc',value]);
                     }
                   });
               });
+            averagesSub = Meteor.subscribe('ticker_averages',function(){
+              Bitfinex.matching("a*").
+                observeChanges({
+                  added : function(id,doc){
+                    //console.log(id);
+                    var key = id.split('_');
+                    if(key.length > 1){
+                      key = keyMapping[key[0]];
+
+                    }
+                    if(typeof key != "undefined" && key && key != ''){
+
+                      var time = new Date(redisKeyToTime(id) * 1000);
+                      var value = parseFloat(doc.value);
+                      // do a key map eventually
+                      flowChart(['x',time],[key,value]);
+                    }
+                    // switch up the key
+                  }
+                });
+            });
             Bitfinex.matching("bb_*").
             observeChanges({
               added : function(id,doc){
@@ -95,6 +138,7 @@ if(typeof chart2 == "undefined"){
                               if(doc.value.indexOf('-') === 0){
                                 gridLine.class = 'lNeg';
                                 var parsedValue = Math.abs(value);
+
                               }else{
                                 var parsedValue = value;
                                 switch(parsedValue){
@@ -114,7 +158,7 @@ if(typeof chart2 == "undefined"){
                                   var region = {axis: 'x',start: pastTime,end : time, opacity:parsedValue/3, class:'buy'};
                                 // create a region based on the last value in x  and latest...
                                   chart2.regions.add(
-                                    {axis: 'x',start: pastTime,end : time, opacity:parsedValue/2.5,class: 'sell'}
+                                    {axis: 'x',start: pastTime,end : time, opacity:parsedValue/3,class: 'sell'}
                                   );
                                   if(parsedValue > .6 && parsedValue < 2){
                                     region.class = 'sell';
@@ -123,10 +167,11 @@ if(typeof chart2 == "undefined"){
                                   var diff = btcTimeDiff(time,pastTime);
                                   if(diff > 10){
                                     gridLine.text =  (diff > 120 ? (diff/60).toFixed(2) + 'm' : diff + 's');
+                                    chart2.xgrids.add([gridLine]);
                                   }
                                   chart2.regions.add(region);
                                 }
-                                chart2.xgrids.add([gridLine]);
+                                
                               }
                               // attempt to hide labels if values are too similar
                               oldVal = value;
@@ -182,21 +227,33 @@ if(typeof chart2 == "undefined"){
       bindto:'.chart2',
       size: { height: h , width: w },
       data: {
-            type:  'step',
+            type:  'scatter',
             xs :{
               'bfbtc' : 'x',
-              'bsbtc' : 'x2'
+              'bsbtc' : 'x',
+              'OKCoin' : 'x',
+              'Btc-e' : 'x'
+            },
+            types : {
+              'bfbtc' : 'scatter',
+              'bsbtc' : 'scatter',
+              'OKCoin' : 'scatter',
+              'Btc-e' : 'scatter'
             },
             columns: [ 
               ['x'], 
-              ['x2'], 
               ['bfbtc'], 
-              ['bsbtc'] 
+              ['bsbtc'],
+              ['OKCoin'],
+              ['Btc-e']
             ],
-           axes :{
-              'bfbtc' : 'y',
-              'bsbtc' : 'y2'
-           },
+            //groups : [
+            //  ['bfbtc','bsbtc']
+            //],
+           //axes :{
+           //   'bfbtc' : 'y',
+           //   'bsbtc' : 'y2'
+           //},
             axis : {
               x : {
                 label : { position: 'inner-center' }
@@ -207,20 +264,36 @@ if(typeof chart2 == "undefined"){
 
             ,
       color: {
-            pattern: ['white', 'yellow', 'orange']
+            pattern: ['FFFF33', 'FF33FF', '99CCFF',"orange"]
           },
       axis: {
           x: {
             type: 'timeseries',
-            tick: { format: '%I:%M' }
+            tick: { 
+              format: '%I:%M',
+              culling : {
+                max : 4
+              }
+            }
           },
+          //x2 : {
+          //  type: 'timeseries',
+          //  tick: { format: '%I:%M' }
+          //},
           y: {
-            tick : { format: d3.format('$,.2f') }
-          },
-          y2 : {
-            show : true,
-            tick : { format: d3.format('$,.2f') }
+            tick : { 
+              format: d3.format('$,.2f'),
+              culling : {
+                max : 4
+              }
+            }
           }
+          //y2 : {
+          //  show : false,
+          //  tick : { 
+          //    format: d3.format('$,.2f') 
+          //  }
+          //}
         },
       legend: { show: true },
       interaction: {

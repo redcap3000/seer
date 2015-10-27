@@ -7,17 +7,65 @@ btcPastDiff = 0;
 
 bsbtcPastPrice = 0;
 
+
+var setRedis = function(key,time,value){
+	Bitfinex.set(key + '_'+ time,parseFloat(value).toFixed(2));
+};
+
+
+btcAverageCallback = function(priceDetails){
+	if(typeof valArray == "undefined"){
+		valArray = [];
+	}
+	/*
+
+			Btc-e: $284.21
+I20151026-20:16:32.823(-8)? CoinDesk: $287.9464
+I20151026-20:16:32.823(-8)? CoinBase: $0
+I20151026-20:16:32.823(-8)? BitStamp: $288.84
+I20151026-20:16:32.823(-8)? BlockChain: $288.09
+I20151026-20:16:32.824(-8)? OKCoin: $288.62
+I20151026-20:16:32.824(-8)? Bitfinex: $288.8
+I20151026-20:16:32.824(-8)? HitBTC: $304.25
+I20151026-20:16:32.824(-8)? CoinTrader: $0
+I20151026-20:16:32.824(-8)? LoyalBit: $291.42
+I20151026-20:16:32.824(-8)? Bitex.la: $289.58323485
+I20151026-20:16:32.824(-8)? RockTrading: $290.79
+	*/
+
+	  var time =  Math.round(new Date() / 1000,2);
+
+	  Object.keys(priceDetails.prices).map(function(providerName){
+	  	var value = parseFloat(priceDetails.prices[providerName]).toFixed(2);
+	      //console.log(providerName + ': $' + priceDetails.prices[providerName]);
+	      if(typeof keyMapping[providerName] != "undefined" && value != 0.00){
+
+			  if(typeof valArray[providerName] == "undefined"){
+	          	valArray[providerName] = value;
+	         	setRedis(keyMapping[providerName],time,value);
+	          }else if(valArray[providerName] !== value ){
+	          	setRedis(keyMapping[providerName],time,value);
+	          }
+	          valArray[providerName] = value;
+	      }
+	     
+	  });
+              //console.log('---- Average ----$' + parseFloat(priceDetails.average).toFixed(2));
+          };
+
 Meteor.startup(function(){
 	Pusher = Meteor.npmRequire('pusher-client');
 	var pusher = new Pusher('de504dc5763aeef9ff52');
 	var trades_channel = pusher.subscribe('live_trades');
 	var i = 0;
 	trades_channel.bind('trade', Meteor.bindEnvironment(function(data) {
-		if(data['price'] != bsbtcPastPrice){
+		var price = parseFloat(data['price']);
+
+		if(price && price != bsbtcPastPrice){
 		    var time =  Math.round(new Date() / 1000,2);
-		    Bitfinex.set('bs_' + time, parseFloat(data['price']));
-	    	console.log( ' bitstamp : ' + data['amount'] + ' BTC @ ' + data['price'] + ' USD');
-	    	bsbtcPastPrice = data['price'];
+		    setRedis('bs' , time, data['price']);
+	    	//console.log( ' bitstamp : ' + data['amount'] + ' BTC @ ' + data['price'] + ' USD');
+	    	bsbtcPastPrice = price;
 		}
 	}));
 
@@ -25,24 +73,29 @@ Meteor.startup(function(){
 		function(){
 			console.log(new Date());
 			RunCli.run("redis-cli flushall");
+
+
 		},
-	1000*60*10);
+	1000*60*4);
 	Meteor.setInterval(function(){
 		var time =  Math.round(new Date() / 1000,2);
 		var ltcPrice = bitfinex_ticker('ltcusd','last_price');
 		var btcPrice = bitfinex_ticker('btcusd','last_price');
+		btcAverage(btcAverageCallback);
 		if(btcPrice && btcPrice != btcPastPrice){
+		
 			var btcDiff = btcPrice - btcPastPrice;
-			Bitfinex.set('bb_'+time,parseFloat(btcPrice).toFixed(2));
+			setRedis('bb',time,btcPrice);
+
 			btcPastPrice = btcPrice;
-			if(btcPastDiff != btcDiff && Math.abs(btcDiff) > .25){
+			if(btcPastDiff != btcDiff && Math.abs(btcDiff) > .5){
 				console.log('BTC\t: ' + 
 							btcDiff.toFixed(2) + 
 							'\t\t\t: ' + 
 							btcPastPrice + 
 							'\t* '+
 							btcPastDiff.toFixed(2));
-				Bitfinex.set('bdd_' + time,btcPastDiff - btcDiff);
+				setRedis('bdd',time,btcPastDiff - btcDiff);
 			}
 			btcPastDiff = btcDiff;
 		}
@@ -62,10 +115,3 @@ Meteor.startup(function(){
 	1000);
 });
 
-
-Meteor.methods ({
-	'flushRedis' : function(){
-		console.log('flush all');
-		RunCli.run("redis-cli flushall")
-	}
-});

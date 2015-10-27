@@ -16,3 +16,7 @@ Meteor.publish('ticker_litecoin', function(){
 Meteor.publish("ticker_bitstamp", function(){
 	return Bitfinex.matching('bs_*');
 });
+
+Meteor.publish("ticker_averages", function(){
+	return Bitfinex.matching('a*');
+});
