@@ -17,27 +17,12 @@ btcAverageCallback = function(priceDetails){
 	if(typeof valArray == "undefined"){
 		valArray = [];
 	}
-	/*
-
-			Btc-e: $284.21
-I20151026-20:16:32.823(-8)? CoinDesk: $287.9464
-I20151026-20:16:32.823(-8)? CoinBase: $0
-I20151026-20:16:32.823(-8)? BitStamp: $288.84
-I20151026-20:16:32.823(-8)? BlockChain: $288.09
-I20151026-20:16:32.824(-8)? OKCoin: $288.62
-I20151026-20:16:32.824(-8)? Bitfinex: $288.8
-I20151026-20:16:32.824(-8)? HitBTC: $304.25
-I20151026-20:16:32.824(-8)? CoinTrader: $0
-I20151026-20:16:32.824(-8)? LoyalBit: $291.42
-I20151026-20:16:32.824(-8)? Bitex.la: $289.58323485
-I20151026-20:16:32.824(-8)? RockTrading: $290.79
-	*/
 
 	  var time =  Math.round(new Date() / 1000,2);
 
 	  Object.keys(priceDetails.prices).map(function(providerName){
 	  	var value = parseFloat(priceDetails.prices[providerName]).toFixed(2);
-	      console.log(providerName + ':\t$\t' + priceDetails.prices[providerName]);
+	      //console.log(providerName + ':\t$\t' + priceDetails.prices[providerName]);
 	      if(typeof keyMapping[providerName] != "undefined" && value != 0.00){
 
 			  if(typeof valArray[providerName] == "undefined"){

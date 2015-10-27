@@ -37,7 +37,7 @@ getBtcPrice = function(time){
   // link the x axis to the bfBtcAxis ; find the time ; use index
   // to reference
   if(typeof chart2.data()[0] != "undefined" && typeof chart2.data()[0].values != "undefined" && chart2.data()[0].values.length > 1){
-    var index = chart2.xs().bfbtc.indexOf(time);
+    var index = chart2.xs().bitfinex.indexOf(time);
     if(index != -1){
       return chart2.data()[0].values[index].value;
     }
