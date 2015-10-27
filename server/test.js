@@ -37,7 +37,7 @@ I20151026-20:16:32.824(-8)? RockTrading: $290.79
 
 	  Object.keys(priceDetails.prices).map(function(providerName){
 	  	var value = parseFloat(priceDetails.prices[providerName]).toFixed(2);
-	      //console.log(providerName + ': $' + priceDetails.prices[providerName]);
+	      console.log(providerName + ':\t$\t' + priceDetails.prices[providerName]);
 	      if(typeof keyMapping[providerName] != "undefined" && value != 0.00){
 
 			  if(typeof valArray[providerName] == "undefined"){

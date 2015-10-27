@@ -149,11 +149,11 @@ if(typeof chart2 == "undefined"){
                               var time = new Date(redisKeyToTime(id) * 1000);
                               var value = parseFloat(doc.value);
                               var gridLine = {class : '',value : time};
-                              if(doc.value.indexOf('-') === 0){
-                                gridLine.class = 'lNeg';
-                                var parsedValue = Math.abs(value);
+                              //if(doc.value.indexOf('-') === 0){
+                              //  gridLine.class = 'lNeg';
+                              //  var parsedValue = Math.abs(value);
 
-                              }else{
+                              //}else{
                                 var parsedValue = value;
                                 switch(parsedValue){
                                   case parsedValue > .6:
@@ -186,7 +186,7 @@ if(typeof chart2 == "undefined"){
                                   chart2.regions.add(region);
                                 }
                                 
-                              }
+                              //}
                               // attempt to hide labels if values are too similar
                               oldVal = value;
                               pastTime = time;
@@ -246,14 +246,16 @@ if(typeof chart2 == "undefined"){
               'Bitfinex' : 'x',
               'Bitstamp' : 'x',
               'OKCoin' : 'x',
-              'Btc-e' : 'x'
+              'Btc-e' : 'x',
+              'CoinBase' : 'x'
             },
             columns: [ 
               ['x'], 
               ['Bitfinex'], 
               ['Bitstamp'],
               ['OKCoin'],
-              ['Btc-e']
+              ['Btc-e'],
+              ['CoinBase']
             ],
             //groups : [
             //  ['bfbtc','Bitstamp']
@@ -272,7 +274,7 @@ if(typeof chart2 == "undefined"){
 
             ,
       color: {
-            pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange"]
+            pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange","green"]
           },
       axis: {
           x: {
