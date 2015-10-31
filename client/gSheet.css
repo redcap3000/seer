@@ -3,6 +3,10 @@ body{
 	font-size: 24px;
 }
 
+.c3-xgrid-line line{
+   opacity:.25;
+}
+
 .c3-xgrid-line.lPos line {
     stroke: green;
 }

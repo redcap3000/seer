@@ -102,14 +102,14 @@ genC3Chart = function(){
                               // add a x axis label index by time (of server computed difference data)
                               var time = new Date(redisKeyToTime(id) * 1000);
                               var value = parseFloat(doc.value);
-                              var gridLine = {class : '',value : time};
                               //if(doc.value.indexOf('-') === 0){
                               //  gridLine.class = 'lNeg';
                               //  var parsedValue = Math.abs(value);
 
                               //}else{
                                 var parsedValue = value;
-                                switch(parsedValue){
+                                console.log('diff value\t : ' + value);
+				switch(parsedValue){
                                   case parsedValue > .6:
                                     gridLine.class = 'lPlus';
                                     gridLine.text = doc.value.slice(0,6);
@@ -125,19 +125,15 @@ genC3Chart = function(){
                                 }else{
                                   var region = {axis: 'x',start: pastTime,end : time, opacity:parsedValue/3, class:'buy'};
                                 // create a region based on the last value in x  and latest...
-                                  chart2.regions.add(
-                                    {axis: 'x',start: pastTime,end : time, opacity:parsedValue/3,class: 'sell'}
-                                  );
                                   if(parsedValue > .6 && parsedValue < 2){
                                     region.class = 'sell';
                                     // quick hack to avoid 'initalization' values that are the price of btc
                                   }
                                   var diff = btcTimeDiff(time,pastTime);
-                                  if(diff > 10){
+                                  if(diff > 2){
                                     gridLine.text =  (diff > 120 ? (diff/60).toFixed(2) + 'm' : diff + 's');
                                     chart2.xgrids.add([gridLine]);
                                   }
-                                  chart2.regions.add(region);
                                 }
                                 
                               //}
@@ -147,7 +143,6 @@ genC3Chart = function(){
                             }
                           }
                         );
-                        // bitstamp data.... sub to it.. 
                        
                     });
                   }
@@ -180,14 +175,9 @@ genC3Chart = function(){
                     oldLow = time;
                   }
                 }
-                //bfBtcAxis.push(value);
                 flowChart(['x',time],['Bitfinex',value]);
               }
             });
-            // chained sub
-            
-            // maybe remove this to window on changed event c3...
-            
           }
         );
 
@@ -211,17 +201,24 @@ genC3Chart = function(){
               }
             },
             xFormat : '%I:%M',
-            }
-
-            ,
+      },
+      grid : {
+	x : {
+		show : true,
+	},
+	y : {
+		show : true,
+	}	
+      },
       color: {
-            pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange","green"]
+            pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange","green","red","tan","purple","white","66FF66"]
           },
       axis: {
           x: {
             type: 'timeseries',
             tick: { 
               format: '%I:%M',
+              count : 4,
               culling : {
                 max : 4
               }
@@ -234,6 +231,7 @@ genC3Chart = function(){
           y: {
             tick : { 
               format: d3.format('$,.2f'),
+	      count : 5,
               culling : {
                 max : 4
               }
@@ -246,7 +244,7 @@ genC3Chart = function(){
           //  }
           //}
         },
-      legend: { show: true },
+      legend: { show: true, position : 'right' },
       interaction: {
         enabled: false
       }

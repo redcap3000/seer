@@ -25,7 +25,7 @@ btcAverageCallback = function(priceDetails){
   var time =  Math.round(new Date() / 1000,2);
   Object.keys(priceDetails.prices).map(function(providerName){
     var value = parseFloat(priceDetails.prices[providerName]).toFixed(2);
-    //console.log(providerName + ':\t$\t' + priceDetails.prices[providerName]);
+//    console.log(providerName + ':\t$\t' + priceDetails.prices[providerName]);
     if(typeof keyMapping[providerName] != "undefined" && value != 0.00){
       //console.log(providerName + ':\t$\t' + priceDetails.prices[providerName]);
 
@@ -36,7 +36,7 @@ btcAverageCallback = function(priceDetails){
           setRedis(keyMapping[providerName],time,value);
           var btcDiff = value - valArray[providerName];
           // store difference data for bitfinex ...
-      if(typeof btcPastDiff != "undefined" && btcPastDiff != btcDiff && Math.abs(btcDiff) > .5){
+      if(typeof btcPastDiff != "undefined" && btcPastDiff != btcDiff && Math.abs(btcDiff) > .4){
         console.log('BTC\t: ' + 
               btcDiff.toFixed(2) + 
               '\t\t\t: ' + 
