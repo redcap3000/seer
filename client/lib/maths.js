@@ -1,3 +1,4 @@
+
 btcHigh = function(keyName){
  if(typeof keyName == "undefined"){
 	keyName = 'Bitfinex';
@@ -86,6 +87,11 @@ flowChart = function(columnX,columnY){
     dataColors[keyName] = d3Color;
     chart2.data.names(nameUdate);
     chart2.data.colors(d3Color);
+    if(typeof counter == "undefined"){
+	counter = 1;
+    }else{
+	counter += 1;
+    }
     // update color of graph if higher than previous lighter, if not darker		
     return true;
   }

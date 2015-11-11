@@ -1,7 +1,8 @@
-
+counter = undefined;
 genC3Chart = function(){
   if(typeof chart2 != "undefined"){
     // regen chart....
+    counter = undefined;
     if(typeof bitcoinSub != "undefined")
       bitcoinSub.stop();
     if(typeof averagesSub != "undefined")
@@ -12,7 +13,10 @@ genC3Chart = function(){
 	  diffSub.stop();
     }
     chart2 = chart2.destroy();
-
+    //load data from crossfilter??
+  }else{
+	document.write('<div class="chart2"></div>');
+	theData = crossfilter([{}]);
   }
 
   console.log('Init C3 Chart');
@@ -47,7 +51,15 @@ genC3Chart = function(){
                       // ...
                       var time = new Date(redisKeyToTime(id) * 1000);
                       var value = parseFloat(doc.value);
-                      flowChart(['x',time],['Bitstamp',value]);
+                        if(typeof counter != "undefined" && counter > 3000){
+        			counter = false;
+				genC3Chart();
+    			}
+			// attempting to not have genC3 chart run constantly as things are added and counter had not be reset ...
+			if(counter){			
+				theData.add([ { time : time , value : value, type : "Bitstamp"} ]);
+				flowChart(['x',time],['Bitstamp',value]);
+			}
                     }
                   });
               });
@@ -71,7 +83,8 @@ genC3Chart = function(){
                       var time = new Date(redisKeyToTime(id) * 1000);
                       var value = parseFloat(doc.value);
                       // do a key map eventually
-                      flowChart(['x',time],[key,value]);
+                      theData.add([ { time : time , value : value, type : key} ]);
+			flowChart(['x',time],[key,value]);
                     }
                     // switch up the key
                   }
@@ -175,6 +188,7 @@ genC3Chart = function(){
                     oldLow = time;
                   }
                 }
+		theData.add([ { time : time , value : value, type : "Bitfinex"} ]);
                 flowChart(['x',time],['Bitfinex',value]);
               }
             });

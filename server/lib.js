@@ -31,27 +31,25 @@ btcAverageCallback = function(priceDetails){
 
       if(typeof valArray[providerName] == "undefined"){
           valArray[providerName] = value;
-        setRedis(keyMapping[providerName],time,value);
+          setRedis(keyMapping[providerName],time,value);
         }else if(valArray[providerName] !== value ){
           setRedis(keyMapping[providerName],time,value);
-          var btcDiff = value - valArray[providerName];
+          var btcDiff = (value - valArray[providerName]).toFixed(2);
           // store difference data for bitfinex ...
-      if(typeof btcPastDiff != "undefined" && btcPastDiff != btcDiff && Math.abs(btcDiff) > .4){
-        console.log('BTC\t: ' + 
-              btcDiff.toFixed(2) + 
-              '\t\t\t: ' + 
-              btcPastPrice + 
-              '\t* '+
-              btcPastDiff.toFixed(2));
-        setRedis('bdd',time,btcPastDiff - btcDiff);
-      }else if(btcPastDiff == "undefined"){
-        var btcPastDiff = btcDiff;
-      }
-      btcPastDiff = btcDiff;
-
+      	  if(typeof btcPastDiff != "undefined" && btcPastDiff != btcDiff && Math.abs(btcDiff) > .4){
+       	 	console.log('BTC\t: ' + 
+              	btcDiff.toFixed(2) + 
+              	'\t\t\t: ' + 
+             	btcPastPrice + 
+              	'\t* '+
+              	btcPastDiff.toFixed(2));
+           //	setRedis('bdd',time,btcPastDiff - btcDiff);
+      	  }else if(btcPastDiff == "undefined"){
+        	var btcPastDiff = btcDiff;
+          }
+      	  btcPastDiff = btcDiff;
         }
         valArray[providerName] = value;
     }
-   
   });
  };
