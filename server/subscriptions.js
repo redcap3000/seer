@@ -20,3 +20,9 @@ Meteor.publish("ticker_bitstamp", function(){
 Meteor.publish("ticker_averages", function(){
 	return Bitfinex.matching('a*');
 });
+
+// returns a sets of values that are updated not removed... 
+Meteor.publish("ticker_only",function(){
+	console.log('client subbed');
+	return Bitfinex.matching('t_*');
+})

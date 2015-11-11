@@ -7,183 +7,261 @@
 
 
 // build chart; charts two x axes as a timeseries
-genC3Chart = function(){
-  if(typeof chart2 != "undefined"){
-    // regen chart....
-    if(typeof bitcoinSub != "undefined")
-      bitcoinSub.stop();
-    if(typeof averagesSub != "undefined")
-      averagesSub.stop();
-    if(typeof bitstampSub != "undefined")
-      bitstampSub.stop();
-    if(typeof diffSub != "undefined"){
-    diffSub.stop();
-    }
-    chart2 = chart2.destroy();
 
-  }
+c3.chart.internal.fn.additionalConfig = {
+    legend_radius: 5
+};
 
-  console.log('Init C3 Chart');
-  var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 1000) - 40;
-  var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 740) - 100;
-  // to do...
- 
-  var c3Col = generateColumns(keyMapping);
-  // add bitstamp; we're using a pusher websocket to update this value , so its not in keyMapping
-  c3Col[0].push(['Bitstamp']);
-  c3Col[1]['Bitstamp'] = 'x';
+c3.chart.internal.fn.updateLegend = function (targetIds, options, transitions) {
+    var $$ = this,
+        config = $$.config,
+        base = this.__proto__,
+        CLASS = base.CLASS;
 
-  chart2 = c3.generate({
-      transition : { duration : 0 },
-      padding : {
-        top : 10,
-      },
-      onresized : function(){
-        chart2.resize();
-      },
-      oninit : function(){
-        console.log('chart generation init');
+    var xForLegend, xForLegendText, xForLegendRect, yForLegend, yForLegendText, yForLegendRect;
+    var paddingTop = 4,
+        paddingRight = 36,
+        maxWidth = 0,
+        maxHeight = 0,
+        posMin = 10;
+    var l, totalLength = 0,
+        offsets = {}, widths = {}, heights = {}, margins = [0],
+        steps = {}, step = 0;
+    var withTransition, withTransitionForTransform;
+    var hasFocused = $$.legend.selectAll('.' + CLASS.legendItemFocused).size();
+    var texts, rects, tiles;
 
-        bitcoinSub = Meteor.subscribe("ticker_bitcoin",
-          function(){
-            // begin
-            bitstampSub = Meteor.subscribe("ticker_bitstamp",
-              function(id,doc){
-                Bitfinex.matching("bs_*").
-                  observeChanges({
-                    added: function (id, doc) {
-                      // ...
-                      var time = new Date(redisKeyToTime(id) * 1000);
-                      var value = parseFloat(doc.value);
-                      if(value != null){
-			//theData.add([{ date : time , value : value, type : "Bitstamp" }]);
-		       flowChart(['x',time],['Bitstamp',value]);
-		      }else{
-			console.log("listening to null values in bitstamp");
-                      }
-                    }
-                  });
-              });
-            averagesSub = Meteor.subscribe('ticker_averages',function(){
-              Bitfinex.matching("a*").
-                observeChanges({
-                  added : function(id,doc){
-                    //console.log(id);
-                    var key = id.split('_');
-                    if(key.length > 1){
-                      var l = reverseLookup(key[0]);
-                      if(l){
-                        key = l;
-                      }else{
-                        return false;
-                      }
+    options = options || {};
+    withTransition = base.getOption(options, "withTransition", true);
+    withTransitionForTransform = base.getOption(options, "withTransitionForTransform", true);
 
-                    }
-                    if(typeof key != "undefined" && key && key != ''){
+    function updatePositions(textElement, id, reset) {
+        var box = $$.getTextRect(textElement.textContent, CLASS.legendItem),
+            itemWidth = Math.ceil((box.width + paddingRight) / 10) * 10,
+            itemHeight = Math.ceil((box.height + paddingTop) / 10) * 10,
+            itemLength = $$.isLegendRight || $$.isLegendInset ? itemHeight : itemWidth,
+            areaLength = $$.isLegendRight || $$.isLegendInset ? $$.getLegendHeight() : $$.getLegendWidth(),
+            margin, maxLength;
 
-                      var time = new Date(redisKeyToTime(id) * 1000);
-                      var value = parseFloat(doc.value);
-                      // do a key map eventually
-		      if(value != null){
-		        theData.add([{ date : time , value : value, type : key }]);
-                        flowChart(['x',time],[key,value]);
-		      }else{
-			console.log("value null in ticker_averages" + " " + doc.value);
-                      }
-                    }
-                    // switch up the key
-                  }
-                });
-            });
-            Bitfinex.matching("bb_*").
-            observeChanges({
-              added : function(id,doc){
-                var time = new Date(redisKeyToTime(id) * 1000);
-                var value = parseFloat(doc.value);
-                var btcPrice = parseFloat(doc.value);
-                if(typeof oldHigh == "undefined"){
-                  chart2.axis.labels({y:value.toFixed(2),position:"middle"});
-                }else{
-                  chart2.axis.labels({y:value.toFixed(2) + ' , ' + (value - getBtcPrice(oldHigh)).toFixed(2),position:"middle"});
+        // MEMO: care about condifion of step, totalLength
+        function updateValues(id, withoutStep) {
+            if (!withoutStep) {
+                margin = (areaLength - totalLength - itemLength) / 2;
+                if (margin < posMin) {
+                    margin = (areaLength - itemLength) / 2;
+                    totalLength = 0;
+                    step++;
                 }
-		if(value != null){
-	  	//	theData.add([{ date : time , value : value, type : "Bitfinex" }]);		
-			flowChart(['x',time],['Bitfinex',value]);
-		}
-              }
+            }
+            steps[id] = step;
+            margins[step] = $$.isLegendInset ? 10 : margin;
+            offsets[id] = totalLength;
+            totalLength += itemLength;
+        }
+
+        if (reset) {
+            totalLength = 0;
+            step = 0;
+            maxWidth = 0;
+            maxHeight = 0;
+        }
+
+        if (config.legend_show && !$$.isLegendToShow(id)) {
+            widths[id] = heights[id] = steps[id] = offsets[id] = 0;
+            return;
+        }
+
+        widths[id] = itemWidth;
+        heights[id] = itemHeight;
+
+        if (!maxWidth || itemWidth >= maxWidth) {
+            maxWidth = itemWidth;
+        }
+        if (!maxHeight || itemHeight >= maxHeight) {
+            maxHeight = itemHeight;
+        }
+        maxLength = $$.isLegendRight || $$.isLegendInset ? maxHeight : maxWidth;
+
+        if (config.legend_equally) {
+            Object.keys(widths).forEach(function (id) {
+                widths[id] = maxWidth;
             });
-            // chained sub
-            
-            // maybe remove this to window on changed event c3...
-            
-          }
-        );
-
-      },
-      bindto:'.chart2',
-      size: { height: h , width: w },
-      data: {
-            type:  'scatter',
-            xs :c3Col[1],
-            columns: c3Col[0],
-            //groups : [
-            //  ['bfbtc','Bitstamp']
-            //],
-           //axes :{
-           //   'bfbtc' : 'y',
-           //   'Bitstamp' : 'y2'
-           //},
-            axis : {
-              x : {
-                label : { position: 'inner-center' }
-              }
-            },
-            xFormat : '%I:%M',
+            Object.keys(heights).forEach(function (id) {
+                heights[id] = maxHeight;
+            });
+            margin = (areaLength - maxLength * targetIds.length) / 2;
+            if (margin < posMin) {
+                totalLength = 0;
+                step = 0;
+                targetIds.forEach(function (id) {
+                    updateValues(id);
+                });
+            } else {
+                updateValues(id, true);
             }
+        } else {
+            updateValues(id);
+        }
+    }
 
-            ,
-      tooltip: {
-        show: false
-        },
-      color: {
-            pattern: ['red', '#FF33FF', 'blue',"orange","green"]
-          },
-      axis: {
-          x: {
-            type: 'timeseries',
-            tick: { 
-              format: '%I:%M',
-              culling : {
-                max : 4
-              }
-            }
-          },
-          //x2 : {
-          //  type: 'timeseries',
-          //  tick: { format: '%I:%M' }
-          //},
-          y: {
-            tick : { 
-              format: d3.format('$,.2f'),
-              culling : {
-                max : 4
-              }
-            }
-          }
-          //y2 : {
-          //  show : false,
-          //  tick : { 
-          //    format: d3.format('$,.2f') 
-          //  }
-          //}
-        },
-      legend: { 
-        show: true,
-        position : "right"
-      },
-      interaction: {
-        enabled: false
-      }
-  });
+    if ($$.isLegendRight) {
+        xForLegend = function (id) {
+            return maxWidth * steps[id];
+        };
+        yForLegend = function (id) {
+            return margins[steps[id]] + offsets[id];
+        };
+    } else if ($$.isLegendInset) {
+        xForLegend = function (id) {
+            return maxWidth * steps[id] + 10;
+        };
+        yForLegend = function (id) {
+            return margins[steps[id]] + offsets[id];
+        };
+    } else {
+        xForLegend = function (id) {
+            return $$.getCurrentPaddingLeft() + offsets[id];
+        };
+        yForLegend = function (id) {
+            return maxHeight * steps[id] + config.legend_radius;
+        };
+    }
+    xForLegendText = function (id, i) {
+        return xForLegend(id, i) + 14;
+    };
+    yForLegendText = function (id, i) {
+        return yForLegend(id, i) + 9 - config.legend_radius;
+    };
+    xForLegendRect = function (id, i) {
+        return xForLegend(id, i) - 4;
+    };
+    yForLegendRect = function (id, i) {
+        return yForLegend(id, i) - 7 + config.legend_radius;
+    };
 
-}
+    // Define g for legend area
+    l = $$.legend.selectAll('.' + CLASS.legendItem)
+        .data(targetIds)
+        .enter().append('g')
+        .attr('class', function (id) {
+        return $$.generateClass(CLASS.legendItem, id);
+    })
+        .style('visibility', function (id) {
+        return $$.isLegendToShow(id) ? 'visible' : 'hidden';
+    })
+        .style('cursor', 'pointer')
+        .on('click', function (id) {
+        config.legend_item_onclick ? config.legend_item_onclick.call($$, id) : $$.api.toggle(id);
+    })
+        .on('mouseover', function (id) {
+        $$.d3.select(this).classed(CLASS.legendItemFocused, true);
+        if (!$$.transiting) {
+            $$.api.focus(id);
+        }
+        if (config.legend_item_onmouseover) {
+            config.legend_item_onmouseover.call($$, id);
+        }
+    })
+        .on('mouseout', function (id) {
+        $$.d3.select(this).classed(CLASS.legendItemFocused, false);
+        if (!$$.transiting) {
+            $$.api.revert();
+        }
+        if (config.legend_item_onmouseout) {
+            config.legend_item_onmouseout.call($$, id);
+        }
+    });
+    l.append('text')
+        .text(function (id) {
+        return base.isDefined(config.data_names[id]) ? config.data_names[id] : id;
+    })
+        .each(function (id, i) {
+        updatePositions(this, id, i === 0);
+    })
+        .style("pointer-events", "none")
+        .attr('x', $$.isLegendRight || $$.isLegendInset ? xForLegendText : -200)
+        .attr('y', $$.isLegendRight || $$.isLegendInset ? -200 : yForLegendText);
+    l.append('rect')
+        .attr("class", CLASS.legendItemEvent)
+        .style('fill-opacity', 0)
+        .attr('x', $$.isLegendRight || $$.isLegendInset ? xForLegendRect : -200)
+        .attr('y', $$.isLegendRight || $$.isLegendInset ? -200 : yForLegendRect);
+    l.append('circle')
+        .attr("class", CLASS.legendItemTile)
+        .style("pointer-events", "none")
+        .style('fill', $$.color)
+        .attr('cx', $$.isLegendRight || $$.isLegendInset ? xForLegendText : -200)
+        .attr('cy', $$.isLegendRight || $$.isLegendInset ? -200 : yForLegend)
+        .attr('r', config.legend_radius)
+        .attr('width', 10)
+        .attr('height', 10);
+    // Set background for inset legend
+    if ($$.isLegendInset && maxWidth !== 0) {
+        $$.legend.insert('g', '.' + CLASS.legendItem)
+            .attr("class", CLASS.legendBackground)
+            .append('rect')
+            .attr('height', $$.getLegendHeight() - 10)
+            .attr('width', maxWidth * (step + 1) + 10);
+    }
+
+    texts = $$.legend.selectAll('text')
+        .data(targetIds)
+        .text(function (id) {
+        return base.isDefined(config.data_names[id]) ? config.data_names[id] : id;
+    }) // MEMO: needed for update
+    .each(function (id, i) {
+        updatePositions(this, id, i === 0);
+    });
+    (withTransition ? texts.transition() : texts)
+        .attr('x', xForLegendText)
+        .attr('y', yForLegendText);
+
+    rects = $$.legend.selectAll('rect.' + CLASS.legendItemEvent)
+        .data(targetIds);
+    (withTransition ? rects.transition() : rects)
+        .attr('width', function (id) {
+        return widths[id];
+    })
+        .attr('height', function (id) {
+        return heights[id];
+    })
+        .attr('x', xForLegendRect)
+        .attr('y', yForLegendRect);
+
+    tiles = $$.legend.selectAll('circle.' + CLASS.legendItemTile)
+        .data(targetIds);
+    (withTransition ? tiles.transition() : tiles)
+        .style('fill', $$.color)
+        .attr('cx', xForLegend)
+        .attr('cy', yForLegend);
+
+    // toggle legend state
+    $$.legend.selectAll('.' + CLASS.legendItem)
+        .classed(CLASS.legendItemHidden, function (id) {
+        return !$$.isTargetToShow(id);
+    })
+        .transition()
+        .style('opacity', function (id) {
+        var This = $$.d3.select(this);
+        if ($$.isTargetToShow(id)) {
+            return !hasFocused || This.classed(CLASS.legendItemFocused) ? $$.opacityForLegend(This) : $$.opacityForUnfocusedLegend(This);
+        } else {
+            return $$.legendOpacityForHidden;
+        }
+    });
+
+    // Update all to reflect change of legend
+    $$.updateLegendItemWidth(maxWidth);
+    $$.updateLegendItemHeight(maxHeight);
+    $$.updateLegendStep(step);
+    // Update size and scale
+    $$.updateSizes();
+    $$.updateScales();
+    $$.updateSvgSize();
+    // Update g positions
+    $$.transformAll(withTransitionForTransform, transitions);
+};
+
+
+
+

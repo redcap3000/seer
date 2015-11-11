@@ -4,7 +4,7 @@
 // Variables for y axis; numbers/floats
 //<br/><button onclick="chart2.transform(\'step\')">Step</button><button onclick="chart2.transform(\'line\')">Line</button><button onclick="flushAll()">Flush</button><button onclick="flushAll(60 * 30)">AutoFlush</button>
 
-document.write('<div class="chart2"></div>');
+
 
 // maybe take an object
 // column equals 

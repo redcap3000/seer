@@ -69,7 +69,7 @@ oldVal = {};
 flowChart = function(columnX,columnY){
   if(typeof chart2 != "undefined"){
     var keyName = columnY[0];
-    var d3Color;
+    //var d3Color;
     oldVal[keyName] = columnY[1];
     chart2.flow({
       columns : [
@@ -80,17 +80,20 @@ flowChart = function(columnX,columnY){
     });
     var keyName = columnY[0];
     var nameUdate = {};
+
+    var nameClassUdate = {};
     nameUdate[keyName] = columnY[1].toFixed(2) + '\t' + columnY[0];
-    
-    var dataColors = {};
-    var dataColorValue = 
-    dataColors[keyName] = d3Color;
+    // change class name based on old value.. plus minus...
+//    var dataColors = {};
+ //   var dataColorValue = 
+    //dataColors[keyName] = d3Color;
     chart2.data.names(nameUdate);
-    chart2.data.colors(d3Color);
+    chart2.data.classes=nameClassUdate;
+    //chart2.data.colors(d3Color);
     if(typeof counter == "undefined"){
-	counter = 1;
+	     counter = 1;
     }else{
-	counter += 1;
+	     counter += 1;
     }
     // update color of graph if higher than previous lighter, if not darker		
     return true;
