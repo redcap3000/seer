@@ -15,8 +15,8 @@ genC3Chart = function(){
     chart2 = chart2.destroy();
     //load data from crossfilter??
   }else{
-	document.write('<div class="chart2"></div>');
-	theData = crossfilter([{}]);
+	 document.write('<div class="chart2"></div>');
+	 //theData = crossfilter([{}]);
   }
 
   console.log('Init C3 Chart');
@@ -39,161 +39,68 @@ genC3Chart = function(){
       },
       oninit : function(){
         console.log('chart generation init');
-
-        bitcoinSub = Meteor.subscribe("ticker_bitcoin",
+        Meteor.subscribe("ticker_differenceData",
           function(){
-            // begin
-            bitstampSub = Meteor.subscribe("ticker_bitstamp",
-              function(id,doc){
-                Bitfinex.matching("bs_*").
-                  observeChanges({
-                    added: function (id, doc) {
-                      // ...
-                      var time = new Date(redisKeyToTime(id) * 1000);
-                      var value = parseFloat(doc.value);
-                        if(typeof counter != "undefined" && counter > 3000){
-        			counter = false;
-				genC3Chart();
-    			}
-			// attempting to not have genC3 chart run constantly as things are added and counter had not be reset ...
-			if(counter){			
-				theData.add([ { time : time , value : value, type : "Bitstamp"} ]);
-				flowChart(['x',time],['Bitstamp',value]);
-			}
+            Bitfinex.matching("bdd_*").observeChanges({
+                added : function(id,doc){
+                  console.log('id\t' + id + "\t" + doc.value);
+                }
+              }
+            );
+          }
+        );
+        Meteor.subscribe("ticker_only",
+          function(){
+            Bitfinex.matching("t_*").observeChanges({
+                added : function(id,doc){
+                    var key = id.split('_');
+                    if(key.length > 1){
+                      var l = reverseLookup(key[1]);
+                      if(l){
+                        key = l;
+                      }else{
+                        return false;
+                      }
                     }
-                  });
-              });
-            averagesSub = Meteor.subscribe('ticker_averages',function(){
-              Bitfinex.matching("a*").
-                observeChanges({
-                  added : function(id,doc){
-                    //console.log(id);
+                    if(typeof key != "undefined" && key && key != ''){
+                      var time = new Date();
+                      var value = parseFloat(doc.value);
+                      // do a key map eventually
+                      //console.log({ time : time , value : value, type : key});
+                      //theData.add([ { time : time , value : value, type : key} ]);
+                      flowChart(['x',time],[key,value]);
+                    }
+                },
+                changed : function(id,doc){
                     var key = id.split('_');
                     if(key.length > 1){
                       var l = reverseLookup(key[0]);
                       if(l){
                         key = l;
                       }else{
-                        return false;
+                        // try key[1]
+                        l = reverseLookup(key[1]);
+                        if(!l)
+                          return false;
+                        else
+                          key = l;
                       }
 
                     }
                     if(typeof key != "undefined" && key && key != ''){
-
-                      var time = new Date(redisKeyToTime(id) * 1000);
+                      var time = new Date();
                       var value = parseFloat(doc.value);
                       // do a key map eventually
-                      theData.add([ { time : time , value : value, type : key} ]);
-			flowChart(['x',time],[key,value]);
+                      //theData.add([ { time : time , value : value, type : key} ]);
+                      flowChart(['x',time],[key,value]);
                     }
-                    // switch up the key
-                  }
-                });
-            });
-            Bitfinex.matching("bb_*").
-            observeChanges({
-              added : function(id,doc){
-                var time = new Date(redisKeyToTime(id) * 1000);
-                var value = parseFloat(doc.value);
-                var btcPrice = parseFloat(doc.value);
-                if(typeof oldHigh == "undefined"){
-                  chart2.axis.labels({y:value.toFixed(2),position:"middle"});
-                }else{
-                  chart2.axis.labels({y:value.toFixed(2) + ' , ' + (value - getBtcPrice(oldHigh)).toFixed(2),position:"middle"});
+                },
+                updated : function(id,doc){
+                  console.log('updated + ' + id +'\t' + doc.value);
                 }
-                var dataLength = (typeof chart2 != "undefined" && typeof chart2.data()[0] != "undefined" ? chart2.data()[0].values.length : 0);
-                if( dataLength > 4){
-                  // load differece data on fourth added value to speed up inital load time on slow azz devices
-                  if(dataLength == 5){
-                    diffSub = Meteor.subscribe("ticker_differenceData",
-                    function(){
-                      oldVal = 0;
-                      Bitfinex.matching("bdd_*").
-                        observeChanges({
-                          added : 
-                            function(id,doc){
-                              // add a x axis label index by time (of server computed difference data)
-                              var time = new Date(redisKeyToTime(id) * 1000);
-                              var value = parseFloat(doc.value);
-                              //if(doc.value.indexOf('-') === 0){
-                              //  gridLine.class = 'lNeg';
-                              //  var parsedValue = Math.abs(value);
-
-                              //}else{
-                                var parsedValue = value;
-                                console.log('diff value\t : ' + value);
-				switch(parsedValue){
-                                  case parsedValue > .6:
-                                    gridLine.class = 'lPlus';
-                                    gridLine.text = doc.value.slice(0,6);
-                                    // add xgrid
-                                  break;
-                                  case parsedValue < .4:
-                                    gridLine.class = 'lNeg';
-                                  break;
-                                }
-                                if(typeof pastTime == "undefined"){
-                                  // dont add a region...
-                                  pastTime = time;
-                                }else{
-                                  var region = {axis: 'x',start: pastTime,end : time, opacity:parsedValue/3, class:'buy'};
-                                // create a region based on the last value in x  and latest...
-                                  if(parsedValue > .6 && parsedValue < 2){
-                                    region.class = 'sell';
-                                    // quick hack to avoid 'initalization' values that are the price of btc
-                                  }
-                                  var diff = btcTimeDiff(time,pastTime);
-                                  if(diff > 2){
-                                    gridLine.text =  (diff > 120 ? (diff/60).toFixed(2) + 'm' : diff + 's');
-                                    chart2.xgrids.add([gridLine]);
-                                  }
-                                }
-                                
-                              //}
-                              // attempt to hide labels if values are too similar
-                              oldVal = value;
-                              pastTime = time;
-                            }
-                          }
-                        );
-                       
-                    });
-                  }
-                  if(value > btcHigh()){
-                    // mark old high
-                    var line = {axis:"y", value : value, class: "btcHigh", position:"start"};
-                    if(typeof oldHigh != "undefined"){
-                      // calculate time diff
-                      line.value = getBtcPrice(oldHigh);
-                      line.text = btcTimeDiff(time,oldHigh) + 's ' + getBtcPrice(oldHigh);
-                      chart2.ygrids.remove({ class: "btcHigh"});
-
-                    }
-                    // issue removing ygrids by class ignores proper styling
-                    chart2.ygrids.add([
-                      line
-                    ]);
-                    oldHigh = time;
-                  }else if(value < btcLow()){
-                    var line = {axis:"y",value : value, class: "btcLow",position:"start"};
-                    if(typeof oldLow != "undefined"){
-                      var diff = btcTimeDiff(time,oldLow);
-                      line.value = getBtcPrice(oldLow);
-                      line.text = (diff > 120 ? (diff/60 ).toFixed(2) + 'm ' : diff + 's ') + getBtcPrice(oldLow);
-                      chart2.ygrids.remove({class :"btcLow"});
-                    }
-                    chart2.ygrids.add([
-                      line
-                    ]);
-                    oldLow = time;
-                  }
-                }
-		theData.add([ { time : time , value : value, type : "Bitfinex"} ]);
-                flowChart(['x',time],['Bitfinex',value]);
-              }
             });
-          }
-        );
+        });
+        
 
       },
       bindto:'.chart2',
@@ -267,7 +174,11 @@ genC3Chart = function(){
 }
 
 Meteor.startup(function(){
+  genC3Chart();
 
-
-	genC3Chart();
+  var style = document.createElement('style');
+  style.type = 'text/css';
+  style.innerHTML = 'body{background-color:gray;}';
+  console.log(style);
+  document.getElementsByTagName('head')[0].appendChild(style);
 });
