@@ -156,8 +156,9 @@ flowChart = function(columnX,columnY){
         }
         // if theres a difference ONLY show that ....
     
-        nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(4) + TAB:columnY[1].toFixed(2)) + TAB + key; 
+        nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(2) + TAB: columnY[1]) + TAB + key; 
       }else{
+        var diff = false;
         if(key != 'x' && key != keyName){
           var look = c3StoreY[key][c3StoreY[key].length-1];
           var look = parseFloat(look);
@@ -190,7 +191,7 @@ flowChart = function(columnX,columnY){
           }
           // compare new value stored to all others
 
-          nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(4) + TAB : look.toFixed(2)) + TAB  + key ;
+          nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(2) + TAB : look) + TAB  + key ;
         }
       }
     }
