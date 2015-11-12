@@ -1,4 +1,5 @@
 Meteor.startup(function(){
+	/*
 	Pusher = Meteor.npmRequire('pusher-client');
 	var pusher = new Pusher('de504dc5763aeef9ff52');
 	var trades_channel = pusher.subscribe('live_trades');
@@ -12,13 +13,13 @@ Meteor.startup(function(){
 	    	BitstampPastPrice = price;
 		}
 	}));
-
-	Meteor.setInterval(
-		function(){
-			console.log(new Date());
-			RunCli.run("redis-cli flushall");
-		},
-	1000*60*2);
+	*/
+	//Meteor.setInterval(
+	//	function(){
+	//		console.log(new Date());
+			//RunCli.run("redis-cli flushall");
+	//	},
+	//1000*60*2);
 	Meteor.setInterval(function(){
 		var time =  Math.round(new Date() / 1000,2);
 		btcAverage(btcAverageCallback);

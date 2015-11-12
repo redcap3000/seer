@@ -15,7 +15,7 @@ genC3Chart = function(){
     chart2 = chart2.destroy();
     //load data from crossfilter??
   }else{
-	 document.write('<div class="chart2"></div>');
+	 document.write('<div class="chart1"></div><div class="chart2"></div>');
 	 //theData = crossfilter([{}]);
   }
 
@@ -28,7 +28,54 @@ genC3Chart = function(){
   // add bitstamp; we're using a pusher websocket to update this value , so its not in keyMapping
   c3Col[0].push(['Bitstamp']);
   c3Col[1]['Bitstamp'] = 'x';
+  chart1 = c3.generate({
+      transition : { duration : 0 },
+      padding : {
+        top : 10,
+      },
+      onresized : function(){
+        chart2.resize();
+      },
+      oninit : function(){
+        console.log('chart1 generation init');
+      },
+            bindto:'.chart1',
+      size: { height: h , width: w },
+      data: {
+            type:  'area-spline',
+            xs :c3Col[1],
+            columns: c3Col[0],
+            //groups : [
+            //  ['bfbtc','Bitstamp']
+            //],
+           //axes :{
+           //   'bfbtc' : 'y',
+           //   'Bitstamp' : 'y2'
+           //},
+            axis : {
+              x : {
+                label : { position: 'inner-center' }
+              }
+            },
+            xFormat : '%I:%M',
+            xs :c3Col[1],
+            columns: c3Col[0],
+             groups: [keyGroups]
+      },
+      grid : {
+          x : {
+            show : true,
+          },
+          y : {
+            show : true,
+          } 
+      },
+      color: {
+            pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange","green","red","tan","purple","white","66FF66"]
+          }
 
+      
+  });
   chart2 = c3.generate({
       transition : { duration : 0 },
       padding : {
@@ -38,7 +85,8 @@ genC3Chart = function(){
         chart2.resize();
       },
       oninit : function(){
-        console.log('chart generation init');
+        console.log('chart2 generation init');
+        /*
         Meteor.subscribe("ticker_differenceData",
           function(){
             Bitfinex.matching("bdd_*").observeChanges({
@@ -49,6 +97,7 @@ genC3Chart = function(){
             );
           }
         );
+        */
         Meteor.subscribe("ticker_only",
           function(){
             Bitfinex.matching("t_*").observeChanges({
@@ -124,12 +173,12 @@ genC3Chart = function(){
             xFormat : '%I:%M',
       },
       grid : {
-	x : {
-		show : true,
-	},
-	y : {
-		show : true,
-	}	
+        	x : {
+        		show : true,
+        	},
+        	y : {
+        		show : true,
+        	}	
       },
       color: {
             pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange","green","red","tan","purple","white","66FF66"]
@@ -175,10 +224,8 @@ genC3Chart = function(){
 
 Meteor.startup(function(){
   genC3Chart();
-
   var style = document.createElement('style');
   style.type = 'text/css';
   style.innerHTML = 'body{background-color:gray;}';
-  console.log(style);
   document.getElementsByTagName('head')[0].appendChild(style);
 });

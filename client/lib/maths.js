@@ -155,8 +155,8 @@ flowChart = function(columnX,columnY){
           a = '\u21D3\t';
         }
         // if theres a difference ONLY show that ....
-    
-        nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(2) + TAB: columnY[1]) + TAB + key; 
+        // 
+        nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(2) + TAB: ""); 
       }else{
         var diff = false;
         if(key != 'x' && key != keyName){
@@ -168,8 +168,6 @@ flowChart = function(columnX,columnY){
             if(diff && !isNaN(diff)){
               if(Math.abs(diff) > .10){
               // update
-              console.log(key);
-              console.log('key ' + key + ' ' + diff) ;
 
                 ;
               }else{
@@ -191,14 +189,14 @@ flowChart = function(columnX,columnY){
           }
           // compare new value stored to all others
 
-          nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(2) + TAB : look) + TAB  + key ;
+          nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(2) + TAB : "");
         }
       }
     }
 
     chart2.data.names(nameUdate);
 
-    //console.log(columns);
+    //(columns);
     if(columns.length > 0){
       chart2.load({columns : columns});
     }
