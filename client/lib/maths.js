@@ -66,29 +66,146 @@ btcTimeDiff = function(time,pastTime){
 */
 
 oldVal = {};
+
+c3StoreY = {};
+
+c3StoreX = ['x'];
+
+
+
 flowChart = function(columnX,columnY){
   if(typeof chart2 != "undefined"){
     var keyName = columnY[0];
     //var d3Color;
-    oldVal[keyName] = columnY[1];
-    chart2.flow({
-      columns : [
-        columnX,
-        columnY
-      ],
-      length : 0
-    });
+    //oldVal[keyName] = columnY[1];
+    //chart2.flow({
+    //  columns : [
+    //    columnX,
+    //    columnY
+    //  ],
+    //  length : 0
+    //});
     var keyName = columnY[0];
     var nameUdate = {};
 
     var nameClassUdate = {};
-    nameUdate[keyName] = columnY[1].toFixed(2) + '\t' + columnY[0];
-    // change class name based on old value.. plus minus...
-//    var dataColors = {};
- //   var dataColorValue = 
-    //dataColors[keyName] = d3Color;
+    var nameUdate = {};
+    //nameUdate[keyName] = '*' + columnY[1].toFixed(2) + '\t' + columnY[0];
+    // change all other keynames to NOT be '*'
+   
+    // do some basic stat data... show + if price went up minus if it went down?
+   
+    
+    if(typeof c3StoreY[keyName] == "undefined"){
+      c3StoreY[keyName] = [keyName];
+    }
+    // time
+    // check last value to see if its close enough to current value?
+    if(c3StoreX.length > 1){
+      var lastTime = c3StoreX[c3StoreX.length -1];
+    }else{
+      lastTime = false;
+    }
+    if(lastTime && lastTime.getTime() == columnX[1].getTime()){
+      console.log('already have this value');
+    }else{
+      c3StoreX.push(columnX[1]);
+    }
+    //[c3StoreY[key].length-1]
+    var oldValue = c3StoreY[keyName];
+    c3StoreY[keyName].push(columnY[1]);
+
+    // next load ALL data? or just the one that changed... hmmmm
+    // iteriate through keys in c3Store
+    var columns = [];
+    // add 'x time column' eventually search for time to avoid adding too many dots to thesame time?
+    columns.push(c3StoreX);
+    var TAB = "\t";
+    for(var key in c3StoreY){
+      var a = '';
+      columns.push(c3StoreY[key]);
+
+      if(c3StoreY[key].length > 3){
+        var oldOldValue = c3StoreY[key][c3StoreY[key].length-2];
+        var diff = (oldOldValue - look).toFixed(2);
+        if(diff && !isNaN(diff)){
+          if(Math.abs(diff) > .10){
+          // update
+            ;
+          }else{
+            // use previous diff
+            diff = false;
+          }
+
+        }
+      }else{
+        oldOldValue = false;
+      }
+
+
+      if(key == keyName){
+        // used to determine if val is higher/lower could also be used to 
+        // determine the highest moving market
+
+        if(oldValue[oldValue.length-2] < columnY[1]){
+          //&uArr;;
+          a = '\u21D1\t';
+        }else{
+          //&dArr;
+          a = '\u21D3\t';
+        }
+        // if theres a difference ONLY show that ....
+    
+        nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(4) + TAB:columnY[1].toFixed(2)) + TAB + key; 
+      }else{
+        if(key != 'x' && key != keyName){
+          var look = c3StoreY[key][c3StoreY[key].length-1];
+          var look = parseFloat(look);
+          if(c3StoreY[key].length > 3){
+            var oldOldValue = c3StoreY[key][c3StoreY[key].length-2];
+            var diff = (oldOldValue - look).toFixed(2);
+            if(diff && !isNaN(diff)){
+              if(Math.abs(diff) > .10){
+              // update
+              console.log(key);
+              console.log('key ' + key + ' ' + diff) ;
+
+                ;
+              }else{
+                // use previous diff
+                diff = false;
+              }
+
+            }
+          }else{
+            oldOldValue = false;
+          }
+          // to do use another icon to determine "NEW HIGH" and "NEW LOW"
+          if(look > columnY[1]){
+            // swap out to show 'minor changes'
+            // &oplus;
+            a = (diff ? '\u2191' : '\u2295');
+          }else{
+            a = (diff ? '\u2193' : '\u2297');
+          }
+          // compare new value stored to all others
+
+          nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(4) + TAB : look.toFixed(2)) + TAB  + key ;
+        }
+      }
+    }
+
     chart2.data.names(nameUdate);
-    chart2.data.classes=nameClassUdate;
+
+    //console.log(columns);
+    if(columns.length > 0){
+      chart2.load({columns : columns});
+    }
+    // change class name based on old value.. plus minus...
+    // var dataColors = {};
+    // var dataColorValue = 
+    //dataColors[keyName] = d3Color;
+    
     //chart2.data.colors(d3Color);
     if(typeof counter == "undefined"){
 	     counter = 1;
@@ -118,6 +235,7 @@ reverseLookup = function(keyValue){
   }
   return false;
 }
+
 generateColumns = function(keyObj){
   if(typeof keyObj == "undefined"){
     return false;
