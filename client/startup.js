@@ -42,7 +42,7 @@ genC3Chart = function(){
             bindto:'.chart1',
       size: { height: h , width: w },
       data: {
-            type:  'area-spline',
+            type:  'bar',
             xs :c3Col[1],
             columns: c3Col[0],
             //groups : [
@@ -60,7 +60,7 @@ genC3Chart = function(){
             xFormat : '%I:%M',
             xs :c3Col[1],
             columns: c3Col[0],
-             groups: [keyGroups]
+            //groups: [keyGrouping]
       },
       grid : {
           x : {
@@ -68,11 +68,48 @@ genC3Chart = function(){
           },
           y : {
             show : true,
+            lines : [{value:0}]
           } 
       },
       color: {
             pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange","green","red","tan","purple","white","66FF66"]
+          },
+      axis: {
+        x: {
+          type: 'timeseries',
+          tick: { 
+            format: '%I:%M',
+            count : 4,
+            culling : {
+              max : 4
+            }
           }
+        },
+        //x2 : {
+        //  type: 'timeseries',
+        //  tick: { format: '%I:%M' }
+        //},
+        y: {
+
+          tick : { 
+            format: d3.format('$,.2f'),
+            count : 5,
+            culling : {
+              max : 4
+            }
+          }
+        }
+        //y2 : {
+        //  show : false,
+        //  tick : { 
+        //    format: d3.format('$,.2f') 
+        //  }
+        //}
+      },
+        legend: { show: true, position : 'right' },
+        interaction: {
+          enabled: false
+        }
 
       
   });

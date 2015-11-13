@@ -69,7 +69,11 @@ oldVal = {};
 
 c3StoreY = {};
 
+c3StoreY1 = {};
+
 c3StoreX = ['x'];
+
+c3StoreX1 = ['x'];
 
 
 
@@ -92,13 +96,15 @@ flowChart = function(columnX,columnY){
     var nameUdate = {};
     //nameUdate[keyName] = '*' + columnY[1].toFixed(2) + '\t' + columnY[0];
     // change all other keynames to NOT be '*'
-   
+ 
     // do some basic stat data... show + if price went up minus if it went down?
-   
+    keyGrouping = [];
     
     if(typeof c3StoreY[keyName] == "undefined"){
       c3StoreY[keyName] = [keyName];
     }
+    // for diff data 
+   
     // time
     // check last value to see if its close enough to current value?
     if(c3StoreX.length > 1){
@@ -106,6 +112,35 @@ flowChart = function(columnX,columnY){
     }else{
       lastTime = false;
     }
+
+    //console.log(c3StoreY[keyName].length);
+    //console.log(keyName);
+    if(c3StoreY[keyName].length > 3){
+      var look = c3StoreY[keyName][c3StoreY[keyName].length-1];
+      var look = parseFloat(look);
+      
+      var oldOldValue = c3StoreY[keyName][c3StoreY[keyName].length-2];
+      var diff = (oldOldValue - look).toFixed(2);
+      if(diff && !isNaN(diff) && diff != ''){
+         if(typeof c3StoreY1[keyName] == "undefined"){
+            c3StoreY1[keyName] = [keyName];
+          }
+        c3StoreX1.push(columnX[1]);
+        if(Math.abs(diff) > .10){
+          c3StoreY1[keyName].push(parseFloat(diff).toFixed(2));
+        // update
+          
+        }else{
+          // use previous diff
+          c3StoreY1[keyName].push(0);
+          diff = false;
+        }
+
+      }
+    }else{
+      oldOldValue = false;
+    }
+
     if(lastTime && lastTime.getTime() == columnX[1].getTime()){
       console.log('already have this value');
     }else{
@@ -113,34 +148,23 @@ flowChart = function(columnX,columnY){
     }
     //[c3StoreY[key].length-1]
     var oldValue = c3StoreY[keyName];
+    // add new value 
     c3StoreY[keyName].push(columnY[1]);
 
     // next load ALL data? or just the one that changed... hmmmm
     // iteriate through keys in c3Store
     var columns = [];
+    // for difference data...
+    var columns1 = [];
     // add 'x time column' eventually search for time to avoid adding too many dots to thesame time?
     columns.push(c3StoreX);
+    columns1.push(c3StoreX1);
+
     var TAB = "\t";
     for(var key in c3StoreY){
+      // build keygrouping for c3StoreY1 dynamically?
+      keyGrouping.push(key);
       var a = '';
-      columns.push(c3StoreY[key]);
-
-      if(c3StoreY[key].length > 3){
-        var oldOldValue = c3StoreY[key][c3StoreY[key].length-2];
-        var diff = (oldOldValue - look).toFixed(2);
-        if(diff && !isNaN(diff)){
-          if(Math.abs(diff) > .10){
-          // update
-            ;
-          }else{
-            // use previous diff
-            diff = false;
-          }
-
-        }
-      }else{
-        oldOldValue = false;
-      }
 
 
       if(key == keyName){
@@ -157,28 +181,14 @@ flowChart = function(columnX,columnY){
         // if theres a difference ONLY show that ....
         // 
         nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(2) + TAB: ""); 
+        
+
       }else{
         var diff = false;
         if(key != 'x' && key != keyName){
-          var look = c3StoreY[key][c3StoreY[key].length-1];
-          var look = parseFloat(look);
-          if(c3StoreY[key].length > 3){
-            var oldOldValue = c3StoreY[key][c3StoreY[key].length-2];
-            var diff = (oldOldValue - look).toFixed(2);
-            if(diff && !isNaN(diff)){
-              if(Math.abs(diff) > .10){
-              // update
-
-                ;
-              }else{
-                // use previous diff
-                diff = false;
-              }
-
-            }
-          }else{
-            oldOldValue = false;
-          }
+          // minus one because it will be the latest, unlike the value the key is called upon which will 
+          // i think i'm doing this this way because this value won't be passed into the called function
+      
           // to do use another icon to determine "NEW HIGH" and "NEW LOW"
           if(look > columnY[1]){
             // swap out to show 'minor changes'
@@ -192,13 +202,26 @@ flowChart = function(columnX,columnY){
           nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(2) + TAB : "");
         }
       }
+      columns.push(c3StoreY[key]);
+      //console.log(c3StoreY[key]);
+      if(typeof c3StoreY1[key] != "undefined"){
+        columns1.push(c3StoreY1[key]);
+      }
+      // console.log(c3StoreY1[key]);
+      
     }
 
+    // push diff column
     chart2.data.names(nameUdate);
+
 
     //(columns);
     if(columns.length > 0){
       chart2.load({columns : columns});
+      chart2.groups([keyGrouping]);
+    }
+    if(columns1.length > 0){
+       chart1.load({columns : columns1})
     }
     // change class name based on old value.. plus minus...
     // var dataColors = {};
