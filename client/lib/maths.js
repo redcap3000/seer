@@ -91,9 +91,8 @@ flowChart = function(columnX,columnY){
     //});
     var keyName = columnY[0];
     var nameUdate = {};
+    var nameUdate2 = {};
 
-    var nameClassUdate = {};
-    var nameUdate = {};
     //nameUdate[keyName] = '*' + columnY[1].toFixed(2) + '\t' + columnY[0];
     // change all other keynames to NOT be '*'
  
@@ -181,11 +180,14 @@ flowChart = function(columnX,columnY){
         // if theres a difference ONLY show that ....
         // 
         nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(2) + TAB: ""); 
-        
+        nameUdate2[key] = a + TAB + columnY[1];
 
       }else{
         var diff = false;
-        if(key != 'x' && key != keyName){
+        if(key != 'x' && key != keyName){      
+          var look = c3StoreY[key][c3StoreY[key].length-1];
+          var look = parseFloat(look);
+
           // minus one because it will be the latest, unlike the value the key is called upon which will 
           // i think i'm doing this this way because this value won't be passed into the called function
       
@@ -200,6 +202,8 @@ flowChart = function(columnX,columnY){
           // compare new value stored to all others
 
           nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(2) + TAB : "");
+          nameUdate2[key] = a + TAB + look.toFixed(2);
+
         }
       }
       columns.push(c3StoreY[key]);
@@ -212,13 +216,13 @@ flowChart = function(columnX,columnY){
     }
 
     // push diff column
-    chart2.data.names(nameUdate);
+    chart1.data.names(nameUdate);
 
+    chart2.data.names(nameUdate2);
 
     //(columns);
     if(columns.length > 0){
       chart2.load({columns : columns});
-      chart2.groups([keyGrouping]);
     }
     if(columns1.length > 0){
        chart1.load({columns : columns1})

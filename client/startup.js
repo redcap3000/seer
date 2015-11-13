@@ -34,13 +34,13 @@ genC3Chart = function(){
         top : 10,
       },
       onresized : function(){
-        chart2.resize();
+        chart1.resize();
       },
       oninit : function(){
         console.log('chart1 generation init');
       },
             bindto:'.chart1',
-      size: { height: h , width: w },
+      size: { height: 300 , width: w },
       data: {
             type:  'bar',
             xs :c3Col[1],
@@ -106,7 +106,7 @@ genC3Chart = function(){
         //  }
         //}
       },
-        legend: { show: true, position : 'right' },
+        legend: { show: true, position : 'bottom' },
         interaction: {
           enabled: false
         }
@@ -190,7 +190,7 @@ genC3Chart = function(){
 
       },
       bindto:'.chart2',
-      size: { height: h , width: w },
+      size: { height: 700 , width: w },
       data: {
             type:  'scatter',
             xs :c3Col[1],
@@ -238,7 +238,7 @@ genC3Chart = function(){
           y: {
             tick : { 
               format: d3.format('$,.2f'),
-	      count : 5,
+	             count : 5,
               culling : {
                 max : 4
               }
@@ -251,7 +251,7 @@ genC3Chart = function(){
           //  }
           //}
         },
-      legend: { show: true, position : 'right' },
+      legend: { show: true },
       interaction: {
         enabled: false
       }
