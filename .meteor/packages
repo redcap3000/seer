@@ -7,7 +7,6 @@
 peernohell:c3
 
 
-redcap3000:run-cli
 slava:redis-livedata
 meteor
 webapp
@@ -16,10 +15,13 @@ ddp
 standard-minifiers
 
 
+
+
+
+
+
+
 meteorhacks:npm
 
 
-
-
 npm-container
-mrt:crossfilter
