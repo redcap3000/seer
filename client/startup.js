@@ -42,7 +42,7 @@ genC3Chart = function(){
             bindto:'.chart1',
       size: { height: 300 , width: w },
       data: {
-            type:  'bar',
+            type:  'step',
             xs :c3Col[1],
             columns: c3Col[0],
             //groups : [
@@ -135,8 +135,10 @@ genC3Chart = function(){
           }
         );
         */
-        Meteor.subscribe("ticker_only",
+        if(typeof ticker_only == "undefined")
+        ticker_only = Meteor.subscribe("ticker_only",
           function(){
+            console.log("client sub");
             Bitfinex.matching("t_*").observeChanges({
                 added : function(id,doc){
                     var key = id.split('_');
@@ -192,7 +194,7 @@ genC3Chart = function(){
       bindto:'.chart2',
       size: { height: 700 , width: w },
       data: {
-            type:  'scatter',
+            type:  'step',
             xs :c3Col[1],
             columns: c3Col[0],
             //groups : [
@@ -266,3 +268,4 @@ Meteor.startup(function(){
   style.innerHTML = 'body{background-color:gray;}';
   document.getElementsByTagName('head')[0].appendChild(style);
 });
+
