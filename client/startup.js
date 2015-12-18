@@ -226,10 +226,10 @@ genC3Chart = function(){
           x: {
             type: 'timeseries',
             tick: { 
-              format: '%I:%M',
-              count : 4,
+              format: '%I',
+              count : 2,
               culling : {
-                max : 4
+                max : 2
               }
             }
           },
@@ -239,10 +239,10 @@ genC3Chart = function(){
           //},
           y: {
             tick : { 
-              format: d3.format('$,.2f'),
-	             count : 5,
+              format: d3.format(',.1f'),
+	             count : 2,
               culling : {
-                max : 4
+                max : 2
               }
             }
           }
@@ -265,7 +265,8 @@ Meteor.startup(function(){
   genC3Chart();
   var style = document.createElement('style');
   style.type = 'text/css';
-  style.innerHTML = 'body{background-color:gray;}';
+  style.innerHTML = 'body{background-color:black;}.tick text {display:none} .c3-legend-item text { fill:white ;stroke: none; }.c3-axis-y2-label{fill:black;stroke:black;}';
+  // I have NO idea why my css file is not serving so forced to do this....
   document.getElementsByTagName('head')[0].appendChild(style);
-});
 
+});

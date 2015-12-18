@@ -97,7 +97,7 @@ flowChart = function(columnX,columnY){
     // change all other keynames to NOT be '*'
  
     // do some basic stat data... show + if price went up minus if it went down?
-    keyGrouping = [];
+    //keyGrouping = [];
     
     if(typeof c3StoreY[keyName] == "undefined"){
       c3StoreY[keyName] = [keyName];
@@ -159,53 +159,52 @@ flowChart = function(columnX,columnY){
     columns.push(c3StoreX);
     columns1.push(c3StoreX1);
 
-    var TAB = "\t";
     for(var key in c3StoreY){
       // build keygrouping for c3StoreY1 dynamically?
-      keyGrouping.push(key);
-      var a = '';
+      //keyGrouping.push(key);
+      //var a = '';
 
-
-      if(key == keyName){
+     
+      //if(key == keyName){
         // used to determine if val is higher/lower could also be used to 
         // determine the highest moving market
 
-        if(oldValue[oldValue.length-2] < columnY[1]){
+        //if(oldValue[oldValue.length-2] < columnY[1]){
           //&uArr;;
-          a = '\u21D1\t';
-        }else{
+        //  a = '\u21D1\t';
+        //}else{
           //&dArr;
-          a = '\u21D3\t';
-        }
+        //  a = '\u21D3\t';
+        //}
         // if theres a difference ONLY show that ....
         // 
-        nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(2) + TAB: ""); 
-        nameUdate2[key] = a + TAB + columnY[1];
+        //nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(2) + TAB: ""); 
+        //nameUdate2[key] = a + TAB + columnY[1];
 
-      }else{
-        var diff = false;
-        if(key != 'x' && key != keyName){      
-          var look = c3StoreY[key][c3StoreY[key].length-1];
-          var look = parseFloat(look);
+      //}else{
+        //var diff = false;
+        //if(key != 'x' && key != keyName){      
+          //var look = c3StoreY[key][c3StoreY[key].length-1];
+          //var look = parseFloat(look);
 
           // minus one because it will be the latest, unlike the value the key is called upon which will 
           // i think i'm doing this this way because this value won't be passed into the called function
       
           // to do use another icon to determine "NEW HIGH" and "NEW LOW"
-          if(look > columnY[1]){
+          //if(look > columnY[1]){
             // swap out to show 'minor changes'
             // &oplus;
-            a = (diff ? '\u2191' : '\u2295');
-          }else{
-            a = (diff ? '\u2193' : '\u2297');
-          }
+          //  a = (diff ? '\u2191' : '\u2295');
+          //}else{
+          //  a = (diff ? '\u2193' : '\u2297');
+          //}
           // compare new value stored to all others
 
-          nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(2) + TAB : "");
-          nameUdate2[key] = a + TAB + look.toFixed(2);
+          //nameUdate[key] =  a  + TAB + (diff && !isNaN(diff) ? ' ' + Math.abs(diff).toFixed(2) + TAB : "");
+          //nameUdate2[key] = a + TAB + look.toFixed(2);
 
-        }
-      }
+        //}
+      //}
       columns.push(c3StoreY[key]);
       //console.log(c3StoreY[key]);
       if(typeof c3StoreY1[key] != "undefined"){
@@ -216,9 +215,9 @@ flowChart = function(columnX,columnY){
     }
 
     // push diff column
-    chart1.data.names(nameUdate);
+    //chart1.data.names(nameUdate);
 
-    chart2.data.names(nameUdate2);
+    //chart2.data.names(nameUdate2);
 
     //(columns);
     if(columns.length > 0){
@@ -233,11 +232,11 @@ flowChart = function(columnX,columnY){
     //dataColors[keyName] = d3Color;
     
     //chart2.data.colors(d3Color);
-    if(typeof counter == "undefined"){
-	     counter = 1;
-    }else{
-	     counter += 1;
-    }
+    //if(typeof counter == "undefined"){
+    //	     counter = 1;
+    //}else{
+    //	     counter += 1;
+    //}
     // update color of graph if higher than previous lighter, if not darker		
     return true;
   }
