@@ -261,12 +261,48 @@ genC3Chart = function(){
 
 }
 
+
 Meteor.startup(function(){
   genC3Chart();
   var style = document.createElement('style');
+  // start the 'update' process
+  // update every .... 500 ms? less 100 ms?
   style.type = 'text/css';
   style.innerHTML = 'body{background-color:black;}.tick text {display:none} .c3-legend-item text { fill:white ;stroke: none; }.c3-axis-y2-label{fill:black;stroke:black;}';
   // I have NO idea why my css file is not serving so forced to do this....
   document.getElementsByTagName('head')[0].appendChild(style);
+  Meteor.setInterval(     
+	function(){
+	if(typeof oldLength == "undefined"){
+		// dont update the chart if everything is the same length (nothing added)
+		oldLength = c3StoreX.length;
+	}else{
 
+		if(oldLength == c3StoreX.length){
+			console.log("no new values");
+			return false;
+		}
+	}
+	if(typeof c3StoreX == "undefined" || typeof c3StoreX1 == "undefined" || typeof c3StoreY == "undefined"){
+		return false;
+	}
+	var columns = [];
+        var columns1 = [];
+        
+	columns.push(c3StoreX);
+        columns1.push(c3StoreX1);
+	
+        for(var key in c3StoreY){
+                columns.push(c3StoreY[key]);
+                if(typeof c3StoreY1[key] != "undefined"){
+                        columns1.push(c3StoreY1[key]);
+                }
+        }
+        if(columns.length > 0){
+                chart2.load({columns:columns});
+        }
+        if(columns1.length > 0){
+                chart1.load({columns:columns1});
+        }
+        return true;},200);
 });

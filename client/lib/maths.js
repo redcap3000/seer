@@ -80,40 +80,20 @@ c3StoreX1 = ['x'];
 flowChart = function(columnX,columnY){
   if(typeof chart2 != "undefined"){
     var keyName = columnY[0];
-    //var d3Color;
-    //oldVal[keyName] = columnY[1];
-    //chart2.flow({
-    //  columns : [
-    //    columnX,
-    //    columnY
-    //  ],
-    //  length : 0
-    //});
     var keyName = columnY[0];
     var nameUdate = {};
     var nameUdate2 = {};
 
-    //nameUdate[keyName] = '*' + columnY[1].toFixed(2) + '\t' + columnY[0];
-    // change all other keynames to NOT be '*'
- 
-    // do some basic stat data... show + if price went up minus if it went down?
-    //keyGrouping = [];
     
     if(typeof c3StoreY[keyName] == "undefined"){
       c3StoreY[keyName] = [keyName];
     }
-    // for diff data 
-   
-    // time
-    // check last value to see if its close enough to current value?
     if(c3StoreX.length > 1){
       var lastTime = c3StoreX[c3StoreX.length -1];
     }else{
       lastTime = false;
     }
 
-    //console.log(c3StoreY[keyName].length);
-    //console.log(keyName);
     if(c3StoreY[keyName].length > 3){
       var look = c3StoreY[keyName][c3StoreY[keyName].length-1];
       var look = parseFloat(look);
@@ -152,19 +132,6 @@ flowChart = function(columnX,columnY){
 
     // next load ALL data? or just the one that changed... hmmmm
     // iteriate through keys in c3Store
-    var columns = [];
-    // for difference data...
-    var columns1 = [];
-    // add 'x time column' eventually search for time to avoid adding too many dots to thesame time?
-    columns.push(c3StoreX);
-    columns1.push(c3StoreX1);
-
-    for(var key in c3StoreY){
-      // build keygrouping for c3StoreY1 dynamically?
-      //keyGrouping.push(key);
-      //var a = '';
-
-     
       //if(key == keyName){
         // used to determine if val is higher/lower could also be used to 
         // determine the highest moving market
@@ -205,27 +172,8 @@ flowChart = function(columnX,columnY){
 
         //}
       //}
-      columns.push(c3StoreY[key]);
-      //console.log(c3StoreY[key]);
-      if(typeof c3StoreY1[key] != "undefined"){
-        columns1.push(c3StoreY1[key]);
-      }
-      // console.log(c3StoreY1[key]);
       
-    }
 
-    // push diff column
-    //chart1.data.names(nameUdate);
-
-    //chart2.data.names(nameUdate2);
-
-    //(columns);
-    if(columns.length > 0){
-      chart2.load({columns : columns});
-    }
-    if(columns1.length > 0){
-       chart1.load({columns : columns1})
-    }
     // change class name based on old value.. plus minus...
     // var dataColors = {};
     // var dataColorValue = 
