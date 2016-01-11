@@ -21,13 +21,14 @@ genC3Chart = function(){
 
   console.log('Init C3 Chart');
   var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 1000) - 40;
-  var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 740) - 100;
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 940) - 100;
   // to do...
  
   var c3Col = generateColumns(keyMapping);
   // add bitstamp; we're using a pusher websocket to update this value , so its not in keyMapping
   c3Col[0].push(['Bitstamp']);
   c3Col[1]['Bitstamp'] = 'x';
+  /*
   chart1 = c3.generate({
       transition : { duration : 0 },
       padding : {
@@ -113,6 +114,7 @@ genC3Chart = function(){
 
       
   });
+*/
   chart2 = c3.generate({
       transition : { duration : 0 },
       padding : {
@@ -301,8 +303,8 @@ Meteor.startup(function(){
         if(columns.length > 0){
                 chart2.load({columns:columns});
         }
-        if(columns1.length > 0){
+        if(typeof chart1 != "undefined" && columns1.length > 0){
                 chart1.load({columns:columns1});
         }
-        return true;},200);
+        return true;},100);
 });

@@ -20,10 +20,11 @@ Meteor.startup(function(){
 			//RunCli.run("redis-cli flushall");
 	//	},
 	//1000*60*2);
-	Meteor.setInterval(function(){
-		var time =  Math.round(new Date() / 1000,2);
-		btcAverage(btcAverageCallback);
-	},
-	200);
+
+//	Meteor.setInterval(function(){
+//		var time =  Math.round(new Date() / 1000,2);
+//		btcAverage(btcAverageCallback);
+//	},
+//	200);
 });
 
