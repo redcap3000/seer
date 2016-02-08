@@ -3,15 +3,7 @@ genC3Chart = function(){
   if(typeof chart2 != "undefined"){
     // regen chart....
     counter = undefined;
-    if(typeof bitcoinSub != "undefined")
-      bitcoinSub.stop();
-    if(typeof averagesSub != "undefined")
-      averagesSub.stop();
-    if(typeof bitstampSub != "undefined")
-      bitstampSub.stop();
-    if(typeof diffSub != "undefined"){
-	  diffSub.stop();
-    }
+   
     chart2 = chart2.destroy();
     //load data from crossfilter??
   }else{
@@ -25,96 +17,7 @@ genC3Chart = function(){
   // to do...
  
   var c3Col = generateColumns(keyMapping);
-  // add bitstamp; we're using a pusher websocket to update this value , so its not in keyMapping
-  c3Col[0].push(['Bitstamp']);
-  c3Col[1]['Bitstamp'] = 'x';
-  /*
-  chart1 = c3.generate({
-      transition : { duration : 0 },
-      padding : {
-        top : 10,
-      },
-      onresized : function(){
-        chart1.resize();
-      },
-      oninit : function(){
-        console.log('chart1 generation init');
-      },
-            bindto:'.chart1',
-      size: { height: 300 , width: w },
-      data: {
-            type:  'step',
-            xs :c3Col[1],
-            columns: c3Col[0],
-            //groups : [
-            //  ['bfbtc','Bitstamp']
-            //],
-           //axes :{
-           //   'bfbtc' : 'y',
-           //   'Bitstamp' : 'y2'
-           //},
-            axis : {
-              x : {
-                label : { position: 'inner-center' }
-              }
-            },
-            xFormat : '%I:%M',
-            xs :c3Col[1],
-            columns: c3Col[0],
-            //groups: [keyGrouping]
-      },
-      grid : {
-          x : {
-            show : true,
-          },
-          y : {
-            show : true,
-            lines : [{value:0}]
-          } 
-      },
-      color: {
-            pattern: ['#FFFF33', '#FF33FF', '#99CCFF',"orange","green","red","tan","purple","white","66FF66"]
-          },
-      axis: {
-        x: {
-          type: 'timeseries',
-          tick: { 
-            format: '%I:%M',
-            count : 4,
-            culling : {
-              max : 4
-            }
-          }
-        },
-        //x2 : {
-        //  type: 'timeseries',
-        //  tick: { format: '%I:%M' }
-        //},
-        y: {
 
-          tick : { 
-            format: d3.format('$,.2f'),
-            count : 5,
-            culling : {
-              max : 4
-            }
-          }
-        }
-        //y2 : {
-        //  show : false,
-        //  tick : { 
-        //    format: d3.format('$,.2f') 
-        //  }
-        //}
-      },
-        legend: { show: true, position : 'bottom' },
-        interaction: {
-          enabled: false
-        }
-
-      
-  });
-*/
   chart2 = c3.generate({
       transition : { duration : 0 },
       padding : {
@@ -156,8 +59,6 @@ genC3Chart = function(){
                       var time = new Date();
                       var value = parseFloat(doc.value);
                       // do a key map eventually
-                      //console.log({ time : time , value : value, type : key});
-                      //theData.add([ { time : time , value : value, type : key} ]);
                       flowChart(['x',time],[key,value]);
                     }
                 },
@@ -181,7 +82,6 @@ genC3Chart = function(){
                       var time = new Date();
                       var value = parseFloat(doc.value);
                       // do a key map eventually
-                      //theData.add([ { time : time , value : value, type : key} ]);
                       flowChart(['x',time],[key,value]);
                     }
                 },
@@ -199,13 +99,7 @@ genC3Chart = function(){
             type:  'step',
             xs :c3Col[1],
             columns: c3Col[0],
-            //groups : [
-            //  ['bfbtc','Bitstamp']
-            //],
-           //axes :{
-           //   'bfbtc' : 'y',
-           //   'Bitstamp' : 'y2'
-           //},
+
             axis : {
               x : {
                 label : { position: 'inner-center' }
@@ -235,10 +129,6 @@ genC3Chart = function(){
               }
             }
           },
-          //x2 : {
-          //  type: 'timeseries',
-          //  tick: { format: '%I:%M' }
-          //},
           y: {
             tick : { 
               format: d3.format(',.1f'),
@@ -248,12 +138,6 @@ genC3Chart = function(){
               }
             }
           }
-          //y2 : {
-          //  show : false,
-          //  tick : { 
-          //    format: d3.format('$,.2f') 
-          //  }
-          //}
         },
       legend: { show: true },
       interaction: {
@@ -263,7 +147,7 @@ genC3Chart = function(){
 
 }
 
-
+vMatrix = {};
 Meteor.startup(function(){
   genC3Chart();
   var style = document.createElement('style');
@@ -277,34 +161,45 @@ Meteor.startup(function(){
 	function(){
 	if(typeof oldLength == "undefined"){
 		// dont update the chart if everything is the same length (nothing added)
-		oldLength = c3StoreX.length;
+		oldLength = c3StoreY.length;
 	}else{
 
-		if(oldLength == c3StoreX.length){
+		if(oldLength == c3StoreY.length){
 			console.log("no new values");
 			return false;
 		}
 	}
-	if(typeof c3StoreX == "undefined" || typeof c3StoreX1 == "undefined" || typeof c3StoreY == "undefined"){
-		return false;
-	}
 	var columns = [];
-        var columns1 = [];
         
-	columns.push(c3StoreX);
-        columns1.push(c3StoreX1);
+  columns.push(c3StoreX);
 	
-        for(var key in c3StoreY){
-                columns.push(c3StoreY[key]);
-                if(typeof c3StoreY1[key] != "undefined"){
-                        columns1.push(c3StoreY1[key]);
-                }
+  for(var key in c3StoreY){
+      columns.push(c3StoreY[key]);
+      if(typeof vMatrix[key] == "undefined"){
+        vMatrix[key] = c3StoreY[key].length;
+      }else{
+        if(c3StoreY[key].length !== vMatrix[key]){
+          // we have more records!!
+          var diff =  c3StoreY[key].length - vMatrix[key];
+          if(diff > 1){
+            console.log("High volitility: " + key + " " + diff);
+          }
+          // do some other processing...
+          var newVal = c3StoreY[key][c3StoreY[key].length-1];
+          var valBefore = c3StoreY[key][c3StoreY[key].length-2];
+          var diff = newVal - valBefore;
+          diff = diff.toFixed(4);
+          // make sure that the new diff isn't the abs of the old diff ... hmmm
+          if(Math.abs(diff) > .50){
+            console.log(key + " : " + diff);
+          }
+          vMatrix[key] = c3StoreY[key].length;
         }
-        if(columns.length > 0){
-                chart2.load({columns:columns});
-        }
-        if(typeof chart1 != "undefined" && columns1.length > 0){
-                chart1.load({columns:columns1});
-        }
-        return true;},100);
+      }
+  }
+  if(columns.length > 0){
+          chart2.load({columns:columns});
+
+  } 
+  return true;},100);
 });

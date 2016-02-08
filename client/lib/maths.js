@@ -26,19 +26,17 @@ c3StoreX1 = ['x'];
 
 flowChart = function(columnX,columnY){
   if(typeof chart2 != "undefined"){
-    var keyName = columnY[0];
-    var keyName = columnY[0];
-    var nameUdate = {};
-    var nameUdate2 = {};
+    var keyName = columnY[0],
+    keyName = columnY[0],
+    nameUdate = {},
+    nameUdate2 = {},
+    lastTime = false;
 
-    
     if(typeof c3StoreY[keyName] == "undefined"){
       c3StoreY[keyName] = [keyName];
     }
     if(c3StoreX.length > 1){
       var lastTime = c3StoreX[c3StoreX.length -1];
-    }else{
-      lastTime = false;
     }
 
     if(c3StoreY[keyName].length > 3){
@@ -51,65 +49,29 @@ flowChart = function(columnX,columnY){
          if(typeof c3StoreY1[keyName] == "undefined"){
             c3StoreY1[keyName] = [keyName];
           }
-        c3StoreX1.push(columnX[1]);
-        if(Math.abs(diff) > .10){
-          c3StoreY1[keyName].push(parseFloat(diff).toFixed(2));
-        // update
-          
-        }else{
-          // use previous diff
-          c3StoreY1[keyName].push(0);
-          diff = false;
-        }
-
+          c3StoreX1.push(columnX[1]);
+          if(Math.abs(diff) > .10){
+            c3StoreY1[keyName].push(parseFloat(diff).toFixed(2));
+            // update
+          }else{
+            // use previous diff
+            c3StoreY1[keyName].push(0);
+            diff = false;
+          }
       }
     }else{
       oldOldValue = false;
     }
-
     if(lastTime && lastTime.getTime() == columnX[1].getTime()){
-      console.log('already have this value');
+      //console.log('already have this value');
+      ;
     }else{
       c3StoreX.push(columnX[1]);
     }
-    //[c3StoreY[key].length-1]
     var oldValue = c3StoreY[keyName];
     // add new value 
     c3StoreY[keyName].push(columnY[1]);
 
-    // next load ALL data? or just the one that changed... hmmmm
-    // iteriate through keys in c3Store
-      //if(key == keyName){
-        // used to determine if val is higher/lower could also be used to 
-        // determine the highest moving market
-
-        //if(oldValue[oldValue.length-2] < columnY[1]){
-          //&uArr;;
-        //  a = '\u21D1\t';
-        //}else{
-          //&dArr;
-        //  a = '\u21D3\t';
-        //}
-        // if theres a difference ONLY show that ....
-        // 
-        //nameUdate[key] =  a + TAB + (diff && !isNaN(diff) ? ' ' + ' ' + Math.abs(diff).toFixed(2) + TAB: ""); 
-        //nameUdate2[key] = a + TAB + columnY[1];
-
-      //}else{
-        //var diff = false;
-        //if(key != 'x' && key != keyName){      
-          //var look = c3StoreY[key][c3StoreY[key].length-1];
-          //var look = parseFloat(look);
-
-          // minus one because it will be the latest, unlike the value the key is called upon which will 
-          // i think i'm doing this this way because this value won't be passed into the called function
-      
-          // to do use another icon to determine "NEW HIGH" and "NEW LOW"
-          //if(look > columnY[1]){
-            // swap out to show 'minor changes'
-            // &oplus;
-          //  a = (diff ? '\u2191' : '\u2295');
-          //}else{
           //  a = (diff ? '\u2193' : '\u2297');
           //}
           // compare new value stored to all others
@@ -119,20 +81,6 @@ flowChart = function(columnX,columnY){
 
         //}
       //}
-      
-
-    // change class name based on old value.. plus minus...
-    // var dataColors = {};
-    // var dataColorValue = 
-    //dataColors[keyName] = d3Color;
-    
-    //chart2.data.colors(d3Color);
-    //if(typeof counter == "undefined"){
-    //	     counter = 1;
-    //}else{
-    //	     counter += 1;
-    //}
-    // update color of graph if higher than previous lighter, if not darker		
     return true;
   }
   return false;
