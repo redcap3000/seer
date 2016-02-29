@@ -13,7 +13,7 @@ genC3Chart = function(){
 
   console.log('Init C3 Chart');
   var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 1000) - 40;
-  var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 940) - 100;
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight  || 1041) - 100;
   // to do...
  
   var c3Col = generateColumns(keyMapping);
@@ -47,7 +47,7 @@ genC3Chart = function(){
             Bitfinex.matching("t_*").observeChanges({
                 added : function(id,doc){
                     var key = id.split('_');
-                    if(key.length > 1){
+		    if(key.length > 1){
                       var l = reverseLookup(key[1]);
                       if(l){
                         key = l;
@@ -55,7 +55,12 @@ genC3Chart = function(){
                         return false;
                       }
                     }
-                    if(typeof key != "undefined" && key && key != ''){
+		    if(key == "average"){
+		       startAverage = parseFloat(doc.value);
+		       chart2.ygrids.add([
+		      	{ class:"firstAverage",value: parseFloat(doc.value),text: parseFloat(doc.value) }
+		       ]);
+		    }else if(typeof key != "undefined" && key && key != ''){
                       var time = new Date();
                       var value = parseFloat(doc.value);
                       // do a key map eventually
@@ -78,11 +83,35 @@ genC3Chart = function(){
                       }
 
                     }
+		    var theValue = parseFloat(doc.value);
                     if(typeof key != "undefined" && key && key != ''){
-                      var time = new Date();
-                      var value = parseFloat(doc.value);
-                      // do a key map eventually
-                      flowChart(['x',time],[key,value]);
+                      if(key =="average"){
+			theAverage = theValue;
+
+			 //if(typeof oldAverage == "undefined"){
+			// 	oldAverage = theValue;
+			// }
+			// if( theValue > startAverage){
+			//   chart2.ygrids.remove([{class:"oldHigh"}])
+			//   chart2.ygrids.add( [{ class:"oldHigh" , value: parseFloat(doc.value)}] );
+			//   oldAverage = parseFloat(doc.value);
+			// }else if( theValue < startAverage){
+			//   chart2.ygrids.remove([{class:"oldLow"}]);
+		   	//   chart2.ygrids.add( [{ class:"oldLow", value : parseFloat(doc.value)}] );	   
+			// }
+
+			 //chart2.ygrids.remove([{class:"average"}]);    
+			 //chart2.ygrids.add([
+			//	{ class:"average",value: parseFloat(doc.value) }
+			// ]);
+			      //
+			;
+		      }else{
+		      	var time = new Date();
+                      	var value = parseFloat(doc.value);
+                      	// do a key map eventually
+                      	flowChart(['x',time],[key,value]);
+		      }
                     }
                 },
                 updated : function(id,doc){
@@ -105,7 +134,7 @@ genC3Chart = function(){
                 label : { position: 'inner-center' }
               }
             },
-            xFormat : '%I:%M',
+            //xFormat : '%I:%M',
       },
       grid : {
         	x : {
@@ -120,9 +149,9 @@ genC3Chart = function(){
           },
       axis: {
           x: {
-            type: 'timeseries',
+            //type: 'timeseries',
             tick: { 
-              format: '%I',
+            //  format: '%I',
               count : 2,
               culling : {
                 max : 2
@@ -131,7 +160,7 @@ genC3Chart = function(){
           },
           y: {
             tick : { 
-              format: d3.format(',.1f'),
+            //  format: d3.format(',.1f'),
 	             count : 2,
               culling : {
                 max : 2
@@ -154,7 +183,7 @@ Meteor.startup(function(){
   // start the 'update' process
   // update every .... 500 ms? less 100 ms?
   style.type = 'text/css';
-  style.innerHTML = 'body{background-color:black;}.tick text {display:none} .c3-legend-item text { fill:white ;stroke: none; }.c3-axis-y2-label{fill:black;stroke:black;}';
+  style.innerHTML = 'body{background-color:black;}.tick text {display:none} .c3-legend-item text { fill:white ;stroke: none; }.c3-axis-y2-label{fill:white;stroke:white;} .c3-ygrid-line{fill:white;stroke:white;}; .firstAverage{fill:gray:stroke:gray; } ';
   // I have NO idea why my css file is not serving so forced to do this....
   document.getElementsByTagName('head')[0].appendChild(style);
   Meteor.setInterval(     
@@ -183,7 +212,8 @@ Meteor.startup(function(){
           var diff =  c3StoreY[key].length - vMatrix[key];
           if(diff > 1){
             console.log("High volitility: " + key + " " + diff);
-          }
+            
+	  }
           // do some other processing...
           var newVal = c3StoreY[key][c3StoreY[key].length-1];
           var valBefore = c3StoreY[key][c3StoreY[key].length-2];
@@ -195,11 +225,30 @@ Meteor.startup(function(){
           }
           vMatrix[key] = c3StoreY[key].length;
         }
-      }
+      	}
   }
   if(columns.length > 0){
           chart2.load({columns:columns});
 
-  } 
+  }
+  if(typeof theAverage != "undefined"){
+  	if(typeof oldAverage == "undefined"){
+  		oldAverage = theAverage;
+  	}
+	// update new 'highest' value
+  	if(theAverage > startAverage && theAverage >  oldAverage){
+  		chart2.ygrids.remove([{class:"oldHigh"}]);
+		// adding tenary to hide the difference value if its less than 10 cents
+   		chart2.ygrids.add( [{ class:"oldHigh" , value: theAverage, text: ( Math.abs(theAverage - startAverage) > .10 ?  theAverage : '') }] );
+   		oldAverage = theAverage;
+  	// update new 'lowest' value
+	}else if( theAverage < startAverage && theAverage < oldAverage){
+   		chart2.ygrids.remove([{class:"oldLow"}]);
+   		chart2.ygrids.add( [{ class:"oldLow", value : theAverage, text: (Math.abs(theAverage - startAverage) > .10 ? (oldAverage - theAverage).toFixed(2) : '')}] );
+   		oldAverage = theAverage;
+  	}else{
+		// set the 'middle line' line
+	}
+  }
   return true;},100);
 });

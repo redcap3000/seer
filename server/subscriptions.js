@@ -1,8 +1,16 @@
+Meteor.publish("average",function(){
 
+	return Bitfinex.matching("average");
+});
 
 Meteor.publish('ticker_differenceData', function(){
 	return Bitfinex.matching("bdd_*");
 });
+
+Meteor.publish("priceDetails",function(){
+        return Bitfinex.matching('priceDetails');
+});
+
 /*
 Meteor.publish('ticker_bitcoin', function(){
         return Bitfinex.matching("bb_*");
